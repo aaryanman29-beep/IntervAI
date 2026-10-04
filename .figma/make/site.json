@@ -1,0 +1,10 @@
+{
+  "description": "An AI-driven interview preparation platform that helps users practice mock interviews, receive personalized feedback, and track their progress for various job roles.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

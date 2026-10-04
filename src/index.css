@@ -1,0 +1,30 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Domine:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "DM Sans", sans-serif;
+  --font-display: "Manrope", sans-serif;
+  --color-ink: #182230;
+  --color-muted: #667085;
+  --color-primary: #5b5bd6;
+  --color-primary-dark: #4545b8;
+  --color-primary-soft: #ededff;
+  --color-canvas: #f7f8fc;
+  --color-line: #e8eaf2;
+  --color-success: #16a777;
+  --color-warning: #e89a2d;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { margin: 0; background: var(--color-canvas); color: var(--color-ink); font-family: var(--font-sans); }
+button, input, select, textarea { font: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid color-mix(in srgb, var(--color-primary) 35%, transparent); outline-offset: 2px; }
+.card-shadow { box-shadow: 0 12px 35px rgba(20, 28, 45, .06); }
+.landing-cta-domine { color: var(--color-ink); font-family: "Domine", serif; }
+.page-enter { animation: page-in .35s ease-out both; }
+@keyframes page-in { from { opacity: 0; transform: translateY(8px); } }
+@keyframes pulse-ring { 70%, 100% { transform: scale(1.5); opacity: 0; } }
+.recording-ring::after { content: ""; position: absolute; inset: -10px; border: 2px solid #ef4444; border-radius: 999px; animation: pulse-ring 1.3s infinite; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; } }
