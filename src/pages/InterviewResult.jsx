@@ -12,7 +12,7 @@ export default function InterviewResult() {
     <PageContainer>
       <section className="mb-6 rounded-3xl bg-ink p-7 text-white md:flex md:items-center md:justify-between">
         <div>
-          <span className="inline-flex items-center gap-2 text-sm font-bold text-violet-300">
+          <span className="inline-flex items-center gap-2 text-sm font-bold text-primary-soft">
             <Sparkles className="size-4" />
             SESSION COMPLETE
           </span>

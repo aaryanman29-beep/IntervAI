@@ -12,7 +12,7 @@ export default function ReadinessScore({ value = 82 }) {
         <div
           className="relative grid size-40 place-items-center rounded-full"
           style={{
-            background: `conic-gradient(#5b5bd6 ${value * 3.6}deg, #ededff 0deg)`,
+            background: `conic-gradient(var(--color-primary) ${value * 3.6}deg, var(--color-primary-soft) 0deg)`,
           }}
         >
           <div className="grid size-32 place-items-center rounded-full bg-white text-center">

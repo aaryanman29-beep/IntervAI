@@ -4,13 +4,13 @@
 @theme {
   --font-sans: "DM Sans", sans-serif;
   --font-display: "Manrope", sans-serif;
-  --color-ink: #182230;
-  --color-muted: #667085;
-  --color-primary: #5b5bd6;
-  --color-primary-dark: #4545b8;
-  --color-primary-soft: #ededff;
-  --color-canvas: #f7f8fc;
-  --color-line: #e8eaf2;
+  --color-ink: #492900;
+  --color-muted: #8b572a;
+  --color-primary: #e4a003;
+  --color-primary-dark: #ba6b03;
+  --color-primary-soft: #f2e4a7;
+  --color-canvas: #fdf9ee;
+  --color-line: #e8ddc0;
   --color-success: #16a777;
   --color-warning: #e89a2d;
 }
@@ -28,3 +28,38 @@ button, a { -webkit-tap-highlight-color: transparent; }
 @keyframes pulse-ring { 70%, 100% { transform: scale(1.5); opacity: 0; } }
 .recording-ring::after { content: ""; position: absolute; inset: -10px; border: 2px solid #ef4444; border-radius: 999px; animation: pulse-ring 1.3s infinite; }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; } }
+
+/* Premium Landing Page Animations */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 150ms; }
+.reveal-delay-2 { transition-delay: 300ms; }
+.reveal-delay-3 { transition-delay: 450ms; }
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-delayed {
+  animation: float 6s ease-in-out 3s infinite;
+}
+.animate-float-slow {
+  animation: float 8s ease-in-out 1s infinite;
+}
+.glass-nav {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}

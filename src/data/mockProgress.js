@@ -16,7 +16,7 @@ export const skillScores = [
   { name: "HR", score: 88 },
 ]
 export const categoryData = [
-  { name: "Technical", value: 42, fill: "#5b5bd6" },
+  { name: "Technical", value: 42, fill: "#e4a003" },
   { name: "Behavioral", value: 28, fill: "#8b5cf6" },
   { name: "Coding", value: 18, fill: "#20b486" },
   { name: "HR", value: 12, fill: "#f3a63b" },

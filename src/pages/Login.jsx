@@ -91,7 +91,7 @@ function AuthPanel() {
   return (
     <section className="relative hidden overflow-hidden bg-ink p-12 text-white lg:flex lg:flex-col lg:justify-center">
       <div className="relative z-10 mx-auto max-w-lg">
-        <span className="text-sm font-bold text-violet-300">
+        <span className="text-sm font-bold text-primary-soft">
           PRACTICE. LEARN. GROW.
         </span>
         <h2 className="mt-5 font-display text-4xl font-extrabold leading-tight">
@@ -106,7 +106,7 @@ function AuthPanel() {
             “The feedback made my answers sharper after just three sessions. I
             walked into my interview knowing exactly what to improve.”
           </p>
-          <p className="mt-4 text-sm font-semibold text-violet-200">
+          <p className="mt-4 text-sm font-semibold text-primary-soft">
             Maya · Frontend Engineer
           </p>
         </div>

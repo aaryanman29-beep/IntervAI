@@ -35,14 +35,14 @@ export default function ActivityChart({ title = "Performance trend" }) {
               fontSize={11}
             />
             <Tooltip
-              contentStyle={{ borderRadius: 12, borderColor: "#e8eaf2" }}
+              contentStyle={{ borderRadius: 12, borderColor: "var(--color-line)" }}
             />
             <Line
               type="monotone"
               dataKey="score"
-              stroke="#5b5bd6"
+              stroke="var(--color-primary)"
               strokeWidth={3}
-              dot={{ fill: "#5b5bd6", r: 4 }}
+              dot={{ fill: "var(--color-primary)", r: 4 }}
             />
           </LineChart>
         </ResponsiveContainer>
