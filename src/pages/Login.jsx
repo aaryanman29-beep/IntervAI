@@ -2,16 +2,26 @@ import { ArrowLeft } from "lucide-react"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import Button from "../components/common/Button"
-import { loginUser } from "../services/api"
+import { useAuth } from "../contexts/AuthContext"
 
 export default function Login() {
   const navigate = useNavigate()
+  const { login } = useAuth()
   const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
   const submit = async (event) => {
     event.preventDefault()
     setLoading(true)
-    await loginUser(Object.fromEntries(new FormData(event.currentTarget)))
-    navigate("/dashboard")
+    setError("")
+    try {
+      await login(Object.fromEntries(new FormData(event.currentTarget)))
+      navigate("/dashboard")
+    } catch (err) {
+      setError(err.message || "Failed to login")
+    } finally {
+      setLoading(false)
+    }
   }
   return (
     <div className="grid min-h-screen bg-white lg:grid-cols-2">
@@ -59,6 +69,11 @@ export default function Login() {
                 Forgot password?
               </button>
             </div>
+            {error && (
+              <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
+                {error}
+              </p>
+            )}
             <Button type="submit" loading={loading} className="w-full">
               Sign In
             </Button>

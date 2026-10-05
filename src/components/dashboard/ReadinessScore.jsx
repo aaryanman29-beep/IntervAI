@@ -1,5 +1,7 @@
 import Card from "../common/Card"
-export default function ReadinessScore({ value = 82 }) {
+
+export default function ReadinessScore({ score, loading }) {
+  const value = score ?? 0
   return (
     <Card className="flex h-full flex-col justify-between">
       <div>
@@ -9,26 +11,30 @@ export default function ReadinessScore({ value = 82 }) {
         </p>
       </div>
       <div className="my-6 flex justify-center">
-        <div
-          className="relative grid size-40 place-items-center rounded-full"
-          style={{
-            background: `conic-gradient(var(--color-primary) ${value * 3.6}deg, var(--color-primary-soft) 0deg)`,
-          }}
-        >
-          <div className="grid size-32 place-items-center rounded-full bg-white text-center">
-            <div>
-              <span className="font-display text-4xl font-extrabold">
-                {value}%
-              </span>
-              <p className="mt-1 text-xs font-semibold text-success">
-                Interview ready
-              </p>
+        {loading ? (
+          <div className="size-40 animate-pulse rounded-full bg-slate-200" />
+        ) : (
+          <div
+            className="relative grid size-40 place-items-center rounded-full"
+            style={{
+              background: `conic-gradient(var(--color-primary) ${value * 3.6}deg, var(--color-primary-soft) 0deg)`,
+            }}
+          >
+            <div className="grid size-32 place-items-center rounded-full bg-white text-center">
+              <div>
+                <span className="font-display text-4xl font-extrabold">
+                  {value}%
+                </span>
+                <p className="mt-1 text-xs font-semibold text-success">
+                  {value >= 70 ? "Interview ready" : value >= 40 ? "In progress" : "Getting started"}
+                </p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
       <p className="text-center text-xs text-muted">
-        Top 18% of learners this week
+        Based on your completed interviews
       </p>
     </Card>
   )

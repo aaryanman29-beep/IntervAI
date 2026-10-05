@@ -2,13 +2,16 @@ import { ArrowLeft } from "lucide-react"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import Button from "../components/common/Button"
-import { registerUser } from "../services/api"
+import { useAuth } from "../contexts/AuthContext"
 import { roles } from "../utils/constants"
 import { Field } from "./Login"
+
 export default function Register() {
   const navigate = useNavigate()
+  const { register } = useAuth()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
   const submit = async (event) => {
     event.preventDefault()
     const form = Object.fromEntries(new FormData(event.currentTarget))
@@ -16,9 +19,17 @@ export default function Register() {
       return setError("Password must be at least 8 characters.")
     if (form.password !== form.confirmPassword)
       return setError("Passwords do not match.")
+    
     setLoading(true)
-    await registerUser(form)
-    navigate("/dashboard")
+    setError("")
+    try {
+      await register(form)
+      navigate("/dashboard")
+    } catch (err) {
+      setError(err.message || "Failed to register")
+    } finally {
+      setLoading(false)
+    }
   }
   return (
     <div className="min-h-screen bg-canvas px-5 py-8">

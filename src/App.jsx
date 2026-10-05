@@ -33,6 +33,9 @@ function HydrationFallback() {
   )
 }
 
+import { ProtectedRoute } from "./components/layout/ProtectedRoute"
+import { AuthProvider } from "./contexts/AuthContext"
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -50,54 +53,63 @@ const router = createBrowserRouter([
     HydrateFallback: HydrationFallback,
   },
   {
-    Component: AppLayout,
-    HydrateFallback: HydrationFallback,
+    Component: ProtectedRoute,
     children: [
       {
-        path: "/dashboard",
-        lazy: lazyPage(() => import("./pages/Dashboard")),
-      },
-      {
-        path: "/interview/setup",
-        lazy: lazyPage(() => import("./pages/InterviewSetup")),
-      },
-      {
-        path: "/interview/mock",
-        lazy: lazyPage(() => import("./pages/MockInterview")),
-      },
-      {
-        path: "/interview/result/:id",
-        lazy: lazyPage(() => import("./pages/InterviewResult")),
-      },
-      {
-        path: "/questions",
-        lazy: lazyPage(() => import("./pages/Questions")),
-      },
-      {
-        path: "/questions/:id",
-        lazy: lazyPage(() => import("./pages/QuestionDetails")),
-      },
-      {
-        path: "/progress",
-        lazy: lazyPage(() => import("./pages/Progress")),
-      },
-      {
-        path: "/history",
-        lazy: lazyPage(() => import("./pages/History")),
-      },
-      {
-        path: "/bookmarks",
-        lazy: lazyPage(() => import("./pages/Bookmarks")),
-      },
-      {
-        path: "/profile",
-        lazy: lazyPage(() => import("./pages/Profile")),
-      },
-      {
-        path: "/settings",
-        lazy: lazyPage(() => import("./pages/Settings")),
-      },
-    ],
+        Component: AppLayout,
+        HydrateFallback: HydrationFallback,
+        children: [
+          {
+            path: "/dashboard",
+            lazy: lazyPage(() => import("./pages/Dashboard")),
+          },
+          {
+            path: "/interview/setup",
+            lazy: lazyPage(() => import("./pages/InterviewSetup")),
+          },
+          {
+            path: "/interview/mock",
+            lazy: lazyPage(() => import("./pages/MockInterview")),
+          },
+          {
+            path: "/interview/result/:id",
+            lazy: lazyPage(() => import("./pages/InterviewResult")),
+          },
+          {
+            path: "/questions",
+            lazy: lazyPage(() => import("./pages/Questions")),
+          },
+          {
+            path: "/questions/:id",
+            lazy: lazyPage(() => import("./pages/QuestionDetails")),
+          },
+          {
+            path: "/progress",
+            lazy: lazyPage(() => import("./pages/Progress")),
+          },
+          {
+            path: "/history",
+            lazy: lazyPage(() => import("./pages/History")),
+          },
+          {
+            path: "/bookmarks",
+            lazy: lazyPage(() => import("./pages/Bookmarks")),
+          },
+          {
+            path: "/profile",
+            lazy: lazyPage(() => import("./pages/Profile")),
+          },
+          {
+            path: "/settings",
+            lazy: lazyPage(() => import("./pages/Settings")),
+          },
+          {
+            path: "/roadmap",
+            lazy: lazyPage(() => import("./pages/Roadmap")),
+          },
+        ],
+      }
+    ]
   },
   {
     path: "/404",
@@ -110,6 +122,11 @@ const router = createBrowserRouter([
     HydrateFallback: HydrationFallback,
   },
 ])
+
 export default function App() {
-  return <RouterProvider router={router} />
+  return (
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
+  )
 }

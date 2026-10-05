@@ -1,6 +1,14 @@
 import { Bell, Menu, Search } from "lucide-react"
-import { mockUser } from "../../data/mockUser"
+import { useAuth } from "../../contexts/AuthContext"
+
 export default function Navbar({ onMenu }) {
+  const { user } = useAuth()
+  
+  // Extract initials properly
+  const initials = user?.name 
+    ? user.name.split(" ").map(n => n[0]).join("").toUpperCase().substring(0, 2)
+    : "US"
+    
   return (
     <header className="sticky top-0 z-20 flex h-18 items-center justify-between border-b border-line bg-white/90 px-4 backdrop-blur md:px-8 lg:ml-64">
       <div className="flex items-center gap-3">
@@ -29,11 +37,11 @@ export default function Navbar({ onMenu }) {
           <span className="absolute right-2 top-2 size-2 rounded-full bg-primary ring-2 ring-white" />
         </button>
         <div className="hidden text-right sm:block">
-          <p className="text-sm font-semibold">{mockUser.name}</p>
-          <p className="text-xs text-muted">{mockUser.role}</p>
+          <p className="text-sm font-semibold">{user?.name || "User"}</p>
+          <p className="text-xs text-muted">{user?.targetRole || "Candidate"}</p>
         </div>
         <span className="grid size-10 place-items-center rounded-full bg-primary-soft text-sm font-bold text-primary">
-          {mockUser.initials}
+          {initials}
         </span>
       </div>
     </header>

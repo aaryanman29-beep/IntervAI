@@ -6,11 +6,13 @@ import {
   History,
   LayoutDashboard,
   LogOut,
+  Map,
   Settings,
   UserRound,
   X,
 } from "lucide-react"
 import { NavLink } from "react-router"
+import { useAuth } from "../../contexts/AuthContext"
 
 const links = [
   { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -18,11 +20,14 @@ const links = [
   { to: "/questions", label: "Question Bank", icon: Clock3 },
   { to: "/progress", label: "Progress", icon: BarChart3 },
   { to: "/history", label: "Interview History", icon: History },
+  { to: "/roadmap", label: "Learning Roadmap", icon: Map },
   { to: "/bookmarks", label: "Bookmarks", icon: Bookmark },
   { to: "/profile", label: "Profile", icon: UserRound },
   { to: "/settings", label: "Settings", icon: Settings },
 ]
+
 export default function Sidebar({ open, onClose }) {
+  const { logout } = useAuth()
   return (
     <>
       {open && (
@@ -79,13 +84,16 @@ export default function Sidebar({ open, onClose }) {
             </NavLink>
           ))}
         </nav>
-        <NavLink
-          to="/"
-          className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted hover:bg-red-50 hover:text-red-600"
+        <button
+          onClick={() => {
+            logout()
+            onClose()
+          }}
+          className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted hover:bg-red-50 hover:text-red-600"
         >
           <LogOut className="size-5" />
           Logout
-        </NavLink>
+        </button>
       </aside>
     </>
   )
