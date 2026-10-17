@@ -15,4 +15,6 @@ public class UserResponse {
     private String name;
     private String email;
     private Role role;
+    private String targetRole;
+    private String experienceLevel;
 }

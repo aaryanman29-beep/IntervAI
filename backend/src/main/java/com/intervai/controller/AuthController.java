@@ -39,6 +39,8 @@ public class AuthController {
                 .name(userDetails.getName())
                 .email(userDetails.getEmail())
                 .role(userDetails.getUser().getRole())
+                .targetRole(userDetails.getUser().getTargetRole())
+                .experienceLevel(userDetails.getUser().getExperienceLevel())
                 .build();
         return ResponseEntity.ok(ApiResponse.success(response, "User details fetched"));
     }

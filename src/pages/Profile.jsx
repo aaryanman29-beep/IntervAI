@@ -9,8 +9,10 @@ import { useAsync } from "../hooks/useAsync"
 import { dashboardApi } from "../services/api/dashboardApi"
 import ResumeManager from "../components/profile/ResumeManager"
 
+import { userApi } from "../services/api/userApi"
+
 export default function Profile() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const [editing, setEditing] = useState(false)
   const [profile, setProfile] = useState(null)
   const [saving, setSaving] = useState(false)
@@ -39,8 +41,14 @@ export default function Profile() {
     setSaveError("")
     setSaveSuccess(false)
     try {
-      // PUT /api/users/profile - to be connected when UserController is added
-      // For now, optimistic update using auth context
+      const updated = await userApi.updateProfile({
+        name: profile.name,
+        targetRole: profile.targetRole,
+        experienceLevel: profile.experience,
+      })
+      if (updateUser) {
+        updateUser(updated)
+      }
       setSaveSuccess(true)
       setEditing(false)
     } catch (err) {

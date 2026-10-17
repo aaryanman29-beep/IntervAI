@@ -1,19 +1,22 @@
 spring:
   application:
     name: intervai
+
   datasource:
-    url: jdbc:h2:mem:interview_ai;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=MySQL
-    username: sa
-    password: 
-    driver-class-name: org.h2.Driver
+    url: jdbc:mysql://localhost:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
+    username: root
+    password: Root@7317
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
   jpa:
     hibernate:
       ddl-auto: update
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
+        dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
     show-sql: false
+
   flyway:
     enabled: true
     baseline-on-migrate: true
@@ -22,9 +25,11 @@ intervai:
   security:
     jwt:
       secret: ${JWT_SECRET:8a9b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f}
-      expiration-ms: 86400000 # 24 hours
+      expiration-ms: 86400000
+
   gemini:
-    api-key: ${GEMINI_API_KEY:mock_key}
+    api-key: ${GEMINI_API_KEY:}
+
   storage:
     upload-dir: ${STORAGE_UPLOAD_DIR:uploads}
     max-file-size: 5MB

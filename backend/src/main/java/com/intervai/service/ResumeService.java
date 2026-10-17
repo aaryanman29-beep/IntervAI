@@ -41,16 +41,35 @@ public class ResumeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        if (file.isEmpty() || !file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
+        if (file.isEmpty() || file.getOriginalFilename() == null || !file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
             throw new IllegalArgumentException("Invalid file format. Only PDF is supported.");
+        }
+
+        byte[] fileBytes;
+        try {
+            fileBytes = file.getBytes();
+        } catch (IOException e) {
+            throw new IllegalArgumentException("Failed to read file contents");
+        }
+
+        // Validate %PDF magic bytes
+        if (fileBytes.length < 4 || fileBytes[0] != '%' || fileBytes[1] != 'P' || fileBytes[2] != 'D' || fileBytes[3] != 'F') {
+            throw new IllegalArgumentException("Invalid PDF file: Missing %PDF header.");
         }
 
         String filePath = fileStorageService.storeFile(file);
         
         String extractedText;
-        try (PDDocument document = Loader.loadPDF(file.getBytes())) {
+        try (PDDocument document = Loader.loadPDF(fileBytes)) {
+            // Defense in depth: reject excessively large PDFs (> 25 pages)
+            if (document.getNumberOfPages() > 25) {
+                throw new IllegalArgumentException("PDF exceeds maximum allowed page limit of 25 pages.");
+            }
             PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setSortByPosition(true);
             extractedText = stripper.getText(document);
+        } catch (IllegalArgumentException e) {
+            throw e;
         } catch (IOException e) {
             log.error("Failed to extract text from PDF: {}", e.getMessage());
             extractedText = "TEXT_EXTRACTION_FAILED";

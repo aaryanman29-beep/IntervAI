@@ -44,6 +44,58 @@ export default function MockInterview() {
   const [submittedQuestions, setSubmittedQuestions] = useState(new Set())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+  const [isRecording, setIsRecording] = useState(false)
+  const [recognition, setRecognition] = useState(null)
+  const [speechSupported, setSpeechSupported] = useState(true)
+
+  useEffect(() => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+    if (SpeechRecognition) {
+      const recognizer = new SpeechRecognition()
+      recognizer.continuous = true
+      recognizer.interimResults = true
+      recognizer.lang = "en-US"
+
+      recognizer.onresult = (event) => {
+        let transcript = ""
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript
+        }
+        setAnswer((prev) => {
+          const trimmed = prev.trim()
+          return trimmed ? `${trimmed} ${transcript}` : transcript
+        })
+      }
+
+      recognizer.onerror = (e) => {
+        console.warn("Speech recognition error:", e.error)
+        setIsRecording(false)
+      }
+
+      recognizer.onend = () => {
+        setIsRecording(false)
+      }
+
+      setRecognition(recognizer)
+    } else {
+      setSpeechSupported(false)
+    }
+  }, [])
+
+  const toggleRecording = () => {
+    if (!recognition) return
+    if (isRecording) {
+      recognition.stop()
+      setIsRecording(false)
+    } else {
+      try {
+        recognition.start()
+        setIsRecording(true)
+      } catch (err) {
+        console.warn("Recognition start failed:", err)
+      }
+    }
+  }
 
   useEffect(() => {
     if (!interviewId) {
@@ -240,8 +292,9 @@ export default function MockInterview() {
 
           <div className="my-6 flex justify-center">
             <RecordingControls
-              state={aiState === "submitting" ? "processing" : "idle"}
-              onToggle={() => {}}
+              state={isRecording ? "recording" : aiState === "submitting" ? "processing" : "idle"}
+              onToggle={toggleRecording}
+              isSupported={speechSupported}
             />
           </div>
 

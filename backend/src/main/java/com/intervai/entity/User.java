@@ -33,6 +33,12 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    @Column(name = "target_role")
+    private String targetRole;
+
+    @Column(name = "experience_level")
+    private String experienceLevel;
+
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

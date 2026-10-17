@@ -25,6 +25,10 @@ public class GeminiService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     public String generateContent(String systemInstruction, String userPrompt) {
+        if (apiKey == null || apiKey.trim().isEmpty() || "mock_key".equalsIgnoreCase(apiKey)) {
+            throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
+        }
+
         String url = GEMINI_API_URL + "?key=" + apiKey;
 
         Map<String, Object> requestBody = new HashMap<>();
