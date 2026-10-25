@@ -9,7 +9,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -59,14 +58,13 @@ public class GeminiService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         try {
-            ResponseEntity<Map> response = restTemplate.postForEntity(url, entity, Map.class);
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                List<Map<String, Object>> candidates = (List<Map<String, Object>>) response.getBody().get("candidates");
-                if (candidates != null && !candidates.isEmpty()) {
-                    Map<String, Object> content = (Map<String, Object>) candidates.get(0).get("content");
-                    List<Map<String, Object>> parts = (List<Map<String, Object>>) content.get("parts");
-                    if (parts != null && !parts.isEmpty()) {
-                        return (String) parts.get(0).get("text");
+            com.fasterxml.jackson.databind.JsonNode rootNode = restTemplate.postForObject(url, entity, com.fasterxml.jackson.databind.JsonNode.class);
+            if (rootNode != null && rootNode.has("candidates")) {
+                com.fasterxml.jackson.databind.JsonNode candidates = rootNode.get("candidates");
+                if (candidates.isArray() && !candidates.isEmpty()) {
+                    com.fasterxml.jackson.databind.JsonNode parts = candidates.get(0).path("content").path("parts");
+                    if (parts.isArray() && !parts.isEmpty()) {
+                        return parts.get(0).path("text").asText();
                     }
                 }
             }

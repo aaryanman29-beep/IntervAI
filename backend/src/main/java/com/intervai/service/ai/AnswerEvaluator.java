@@ -1,5 +1,6 @@
 package com.intervai.service.ai;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,7 @@ public class AnswerEvaluator {
         try {
             String jsonResponse = geminiService.generateContent(systemInstruction, userPrompt);
             jsonResponse = cleanJson(jsonResponse);
-            return objectMapper.readValue(jsonResponse, Map.class);
+            return objectMapper.readValue(jsonResponse, new TypeReference<Map<String, Object>>() {});
         } catch (Exception e) {
             log.warn("Gemini service unavailable ({}), providing heuristic answer evaluation.", e.getMessage());
             return generateFallbackEvaluation(safeAnswer);

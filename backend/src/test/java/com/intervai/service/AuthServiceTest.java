@@ -1,7 +1,6 @@
 package com.intervai.service;
 
 import com.intervai.dto.RegisterRequest;
-import com.intervai.entity.User;
 import com.intervai.repository.UserRepository;
 import com.intervai.security.JwtUtil;
 import org.junit.jupiter.api.BeforeEach;

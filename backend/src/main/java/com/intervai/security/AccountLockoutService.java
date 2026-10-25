@@ -51,7 +51,7 @@ public class AccountLockoutService {
     public void recordFailedAttempt(String email) {
         if (email == null) return;
         String key = email.toLowerCase().trim();
-        AttemptTracker tracker = attemptsMap.compute(key, (k, current) -> {
+        attemptsMap.compute(key, (k, current) -> {
             if (current == null) {
                 return new AttemptTracker(1, 0);
             }

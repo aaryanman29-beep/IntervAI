@@ -162,10 +162,13 @@ public class InterviewService {
         }
 
         // Adaptive Follow up
-        if (Boolean.TRUE.equals(evaluation.get("needsFollowUp")) && evaluation.get("followUpQuestion") != null) {
-            Map<String, Object> fq = (Map<String, Object>) evaluation.get("followUpQuestion");
+        if (Boolean.TRUE.equals(evaluation.get("needsFollowUp")) && evaluation.get("followUpQuestion") instanceof Map<?, ?> rawFq) {
+            Map<String, Object> fq = new java.util.HashMap<>();
+            rawFq.forEach((k, v) -> {
+                if (k != null) fq.put(k.toString(), v);
+            });
             List<Question> existing = questionRepository.findByInterviewIdOrderByQuestionOrderAsc(interviewId);
-            int maxOrder = existing.stream().mapToInt(Question::getQuestionOrder).max().orElse(0);
+            int maxOrder = existing.stream().mapToInt(q -> q.getQuestionOrder()).max().orElse(0);
 
             Question followUp = Question.builder()
                     .interview(interview)
@@ -199,10 +202,10 @@ public class InterviewService {
         if (answers.isEmpty()) {
             interview.setOverallScore(0);
         } else {
-            int totalScore = answers.stream().mapToInt(Answer::getScore).sum();
-            int totalCorrectness = answers.stream().mapToInt(Answer::getCorrectnessScore).sum();
-            int totalClarity = answers.stream().mapToInt(Answer::getClarityScore).sum();
-            int totalDepth = answers.stream().mapToInt(Answer::getTechnicalDepthScore).sum();
+            int totalScore = answers.stream().mapToInt(a -> a.getScore()).sum();
+            int totalCorrectness = answers.stream().mapToInt(a -> a.getCorrectnessScore()).sum();
+            int totalClarity = answers.stream().mapToInt(a -> a.getClarityScore()).sum();
+            int totalDepth = answers.stream().mapToInt(a -> a.getTechnicalDepthScore()).sum();
             int count = answers.size();
 
             interview.setOverallScore(totalScore / count);

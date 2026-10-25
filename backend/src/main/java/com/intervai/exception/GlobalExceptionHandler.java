@@ -29,7 +29,13 @@ public class GlobalExceptionHandler {
             }
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ApiResponse<>(false, primaryMessage, errors, "VALIDATION_FAILED"));
+                .body(ApiResponse.<Map<String, String>>builder()
+                        .success(false)
+                        .message(primaryMessage)
+                        .data(errors)
+                        .errorCode("VALIDATION_FAILED")
+                        .timestamp(java.time.Instant.now().toString())
+                        .build());
     }
 
     @ExceptionHandler(BadCredentialsException.class)

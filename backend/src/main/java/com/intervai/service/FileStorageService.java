@@ -1,6 +1,5 @@
 package com.intervai.service;
 
-import com.intervai.exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;

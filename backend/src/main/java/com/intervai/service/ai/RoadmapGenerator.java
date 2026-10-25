@@ -1,5 +1,6 @@
 package com.intervai.service.ai;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class RoadmapGenerator {
         try {
             String jsonResponse = geminiService.generateContent(systemInstruction, userPrompt);
             jsonResponse = cleanJson(jsonResponse);
-            return objectMapper.readValue(jsonResponse, List.class);
+            return objectMapper.readValue(jsonResponse, new TypeReference<List<Map<String, Object>>>() {});
         } catch (Exception e) {
             log.warn("Gemini service unavailable ({}), providing structured roadmap fallback.", e.getMessage());
             return generateFallbackRoadmap(safeRole);
