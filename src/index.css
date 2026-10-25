@@ -86,6 +86,67 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .animate-float-slow {
   animation: float 7s ease-in-out 1s infinite;
 }
+
+/* Attracting Animations for Landing Page */
+@keyframes gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-gradient-text {
+  background-size: 200% auto;
+  animation: gradient-flow 6s ease infinite;
+}
+
+@keyframes shine-sweep {
+  0% { transform: translateX(-100%); }
+  50%, 100% { transform: translateX(200%); }
+}
+.shimmer-badge {
+  position: relative;
+  overflow: hidden;
+}
+.shimmer-badge::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), transparent);
+  animation: shine-sweep 3.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+
+@keyframes pulse-subtle {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+.animate-pulse-subtle {
+  animation: pulse-subtle 4s ease-in-out infinite;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+}
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Interactive Card Elevate & Glow */
+.interactive-feature-card {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.interactive-feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 30px -10px rgba(79, 70, 229, 0.12), 0 8px 12px -6px rgba(15, 23, 42, 0.05);
+}
+
 .glass-nav {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(12px);

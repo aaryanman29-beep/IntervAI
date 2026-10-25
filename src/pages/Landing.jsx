@@ -168,21 +168,27 @@ export default function Landing() {
       </header>
 
       <main>
-        {/* HERO SECTION (Clean White, Pill Badge, Large Bold Typo, Role Strip) */}
-        <section className="bg-white pt-16 pb-16 md:pt-24 md:pb-20 border-b border-slate-200/70">
+        {/* HERO SECTION (Clean White, Ambient Glow Orbs, Shimmer Pill Badge, Animated Gradient Typo, Interactive Role Strip) */}
+        <section className="relative overflow-hidden bg-white pt-16 pb-16 md:pt-24 md:pb-20 border-b border-slate-200/70">
+          
+          {/* Ambient Glowing Background Elements */}
+          <div aria-hidden="true" className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[650px] h-[350px] bg-gradient-to-tr from-indigo-200/45 via-purple-200/35 to-pink-200/25 blur-3xl rounded-full -z-10 animate-pulse-subtle" />
+          <div aria-hidden="true" className="pointer-events-none absolute top-40 -left-20 w-72 h-72 bg-indigo-100/60 rounded-full blur-2xl -z-10 animate-float" />
+          <div aria-hidden="true" className="pointer-events-none absolute top-48 -right-20 w-80 h-80 bg-purple-100/60 rounded-full blur-2xl -z-10 animate-float-delayed" />
+
           <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center reveal">
             
-            {/* Pill Banner */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 mb-6 hover:border-slate-300 transition-colors">
-              <Sparkles className="size-3.5 text-indigo-600" />
+            {/* Shimmer Pill Banner */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-200/80 bg-indigo-50/70 text-xs font-semibold text-indigo-900 mb-6 hover:border-indigo-300 hover:bg-indigo-50 transition-all shimmer-badge shadow-xs">
+              <Sparkles className="size-3.5 text-indigo-600 animate-spin" style={{ animationDuration: "8s" }} />
               <span>Next-Gen AI Interview Coaching & Instant Scorecards</span>
-              <ChevronRight className="size-3 text-slate-400" />
+              <ChevronRight className="size-3 text-indigo-400" />
             </div>
 
-            {/* Main Title */}
+            {/* Main Title with Dynamic Animated Gradient */}
             <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.08] mb-6">
               Everything you need to <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-600 bg-clip-text text-transparent animate-gradient-text">
                 ace your tech interviews
               </span>
             </h1>
@@ -192,17 +198,17 @@ export default function Landing() {
               Level up your career with AI-powered mock interviews, real interview questions from top tech companies, adaptive follow-ups, and personalized skill roadmaps.
             </p>
 
-            {/* Action Buttons */}
+            {/* Action Buttons with Interactive Pulsing Glow */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-14">
-              <Button to="/register" size="lg" className="w-full sm:w-auto font-semibold px-6 py-3 rounded-lg shadow-sm">
+              <Button to="/register" size="lg" className="w-full sm:w-auto font-semibold px-7 py-3.5 rounded-xl shadow-md hover:shadow-indigo-500/25 transition-all duration-300 hover:scale-[1.02]">
                 Get started for free <ArrowRight className="size-4 ml-1.5 opacity-80" />
               </Button>
-              <Button to="/questions" variant="secondary" size="lg" className="w-full sm:w-auto font-semibold px-6 py-3 rounded-lg">
+              <Button to="/questions" variant="secondary" size="lg" className="w-full sm:w-auto font-semibold px-6 py-3.5 rounded-xl hover:bg-slate-100 transition-all duration-300">
                 Browse Question Bank
               </Button>
             </div>
 
-            {/* HORIZONTAL ROLE STRIP (Aced-style icon boxes) */}
+            {/* HORIZONTAL ROLE STRIP (Aced-style interactive icon boxes) */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-6 border-t border-slate-100 text-left">
               {roleTracks.map((track) => {
                 const IconComponent = track.icon
@@ -210,9 +216,9 @@ export default function Landing() {
                   <Link
                     key={track.name}
                     to="/interview/setup"
-                    className="p-4 rounded-xl border border-slate-200/90 bg-white hover:border-indigo-300 hover:bg-slate-50/70 hover:shadow-xs transition-all flex flex-col justify-between group"
+                    className="p-4 rounded-xl border border-slate-200/90 bg-white hover:border-indigo-400 hover:bg-indigo-50/30 hover:shadow-md transition-all duration-300 flex flex-col justify-between group hover:-translate-y-1"
                   >
-                    <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                    <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-300 shadow-xs">
                       <IconComponent className="size-5" />
                     </div>
                     <div>
@@ -230,15 +236,22 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* TRUSTED SOCIAL PROOF & LOGOS (Aced Style) */}
-        <section className="bg-slate-50/80 py-12 border-b border-slate-200/70">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
-            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-6">
-              Candidates who practiced on IntervAI have landed offers at top companies
+        {/* TRUSTED SOCIAL PROOF & LOGOS (Continuous Infinite Marquee) */}
+        <section className="bg-slate-50/80 py-10 border-b border-slate-200/70 overflow-hidden relative">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center mb-5">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest">
+              Candidates who practiced on IntervAI have landed offers at top tech employers
             </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-6 items-center justify-center">
-              {companies.map((comp) => (
-                <div key={comp.name} className="flex items-center justify-center py-2 px-3 bg-white/70 rounded-lg border border-slate-200/60 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-200 transition-all">
+          </div>
+          
+          {/* Continuous Infinite Logo Marquee Strip */}
+          <div className="relative w-full overflow-hidden mask-fade-edges">
+            <div className="animate-marquee flex items-center gap-6">
+              {[...companies, ...companies].map((comp, idx) => (
+                <div
+                  key={`${comp.name}-${idx}`}
+                  className="flex items-center justify-center py-2 px-5 bg-white rounded-xl border border-slate-200/70 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-300 hover:shadow-xs transition-all duration-200 shrink-0"
+                >
                   {comp.name}
                 </div>
               ))}
@@ -294,30 +307,51 @@ export default function Landing() {
                   </Link>
                 </div>
                 
-                {/* Visual Card 1 */}
-                <div className="order-1 md:order-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm">
+                {/* Visual Card 1 with animated voice waves and floating score badge */}
+                <div className="order-1 md:order-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm relative interactive-feature-card group">
+                  
+                  {/* Floating AI Confidence Badge */}
+                  <div className="absolute -top-3 -right-3 z-10 rounded-xl bg-white border border-slate-200 shadow-md px-3 py-1.5 flex items-center gap-2 animate-float">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                    <span className="text-xs font-bold text-slate-800">98% Clarity</span>
+                  </div>
+
                   <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
                     <div className="flex items-center justify-between pb-3 border-b border-slate-100">
                       <div className="flex items-center gap-2.5">
-                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold shadow-xs">
                           AI
                         </div>
                         <div>
                           <div className="text-sm font-bold text-slate-900">IntervAI Voice Session</div>
-                          <div className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active Loop · Question 3 of 5
+                          <div className="text-[11px] text-emerald-600 font-medium flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Active Loop · Question 3 of 5
                           </div>
                         </div>
                       </div>
-                      <Badge variant="New">System Design</Badge>
+                      
+                      {/* Animated Audio Equalizer Bars */}
+                      <div className="flex items-center gap-0.5 px-2 py-1 rounded-md bg-indigo-50 text-indigo-600">
+                        <span className="w-1 bg-indigo-600 rounded-full h-3 animate-pulse" style={{ animationDelay: "0ms" }}></span>
+                        <span className="w-1 bg-indigo-600 rounded-full h-5 animate-pulse" style={{ animationDelay: "150ms" }}></span>
+                        <span className="w-1 bg-indigo-600 rounded-full h-2 animate-pulse" style={{ animationDelay: "300ms" }}></span>
+                        <span className="w-1 bg-indigo-600 rounded-full h-4 animate-pulse" style={{ animationDelay: "100ms" }}></span>
+                      </div>
                     </div>
 
                     <div className="text-sm font-semibold text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200/60 leading-relaxed">
                       "You mentioned utilizing Redis caching in front of PostgreSQL. What eviction policy would you configure and how do you mitigate cache stampede?"
                     </div>
 
-                    <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 text-xs text-indigo-900 font-medium">
-                      💡 <strong>AI Evaluator Note:</strong> Listening for mutex locking, probabilistic early expiration (XFetch), or background cache replenishment.
+                    <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 text-xs text-indigo-900 font-medium flex items-start gap-2">
+                      <Sparkles className="size-4 text-indigo-600 shrink-0 mt-0.5" />
+                      <div>
+                        <strong>AI Evaluator Note:</strong> Listening for mutex locking, probabilistic early expiration (XFetch), or background cache replenishment.
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -325,11 +359,18 @@ export default function Landing() {
 
               {/* Feature 2: Instant Multi-Dimensional Scoring */}
               <div className="grid md:grid-cols-2 gap-10 items-center reveal">
-                <div className="order-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm">
+                <div className="order-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm interactive-feature-card group relative">
+                  
+                  {/* Floating Metric Badge */}
+                  <div className="absolute -bottom-3 -left-3 z-10 rounded-xl bg-white border border-slate-200 shadow-md px-3.5 py-1.5 flex items-center gap-2 animate-float-delayed">
+                    <TrendingUp className="size-4 text-indigo-600" />
+                    <span className="text-xs font-bold text-slate-800">+18% vs Cohort Benchmark</span>
+                  </div>
+
                   <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
                     <div className="flex items-center justify-between mb-4">
                       <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Evaluation Scorecard</span>
-                      <span className="text-2xl font-display font-extrabold text-indigo-600">88/100</span>
+                      <span className="text-2xl font-display font-extrabold text-indigo-600 group-hover:scale-105 transition-transform">88/100</span>
                     </div>
 
                     <div className="space-y-4">
@@ -339,13 +380,16 @@ export default function Landing() {
                         { label: "System Depth & Edge Cases", score: 88, color: "bg-purple-600" },
                         { label: "Structured Delivery", score: 80, color: "bg-amber-500" }
                       ].map((item) => (
-                        <div key={item.label}>
+                        <div key={item.label} className="group/bar">
                           <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
                             <span>{item.label}</span>
-                            <span>{item.score}%</span>
+                            <span className="group-hover/bar:text-indigo-600 transition-colors">{item.score}%</span>
                           </div>
-                          <div className="w-full bg-slate-100 rounded-full h-2">
-                            <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.score}%` }}></div>
+                          <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className={`${item.color} h-2.5 rounded-full transition-all duration-1000 ease-out`}
+                              style={{ width: `${item.score}%` }}
+                            ></div>
                           </div>
                         </div>
                       ))}
