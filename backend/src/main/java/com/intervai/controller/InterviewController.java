@@ -63,6 +63,14 @@ public class InterviewController {
         return ResponseEntity.ok(ApiResponse.success(questions, "Questions fetched successfully"));
     }
 
+    @GetMapping("/{id}/answers")
+    public ResponseEntity<ApiResponse<List<Answer>>> getInterviewAnswers(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @PathVariable String id) {
+        List<Answer> answers = interviewService.getInterviewAnswers(id, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success(answers, "Answers fetched successfully"));
+    }
+
     @GetMapping("/questions")
     public ResponseEntity<ApiResponse<List<Question>>> getUserQuestions(
             @AuthenticationPrincipal UserDetailsImpl userDetails) {

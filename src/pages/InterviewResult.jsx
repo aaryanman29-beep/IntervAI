@@ -32,12 +32,31 @@ export default function InterviewResult() {
     try {
       setLoading(true)
       setError("")
-      const [interviewData, questionData] = await Promise.all([
+      const [interviewData, questionData, answerData] = await Promise.all([
         interviewApi.getById(id),
         interviewApi.getQuestions(id),
+        interviewApi.getAnswers(id).catch(() => []),
       ])
+
+      const answerMap = new Map()
+      if (Array.isArray(answerData)) {
+        answerData.forEach((a) => {
+          if (a?.question?.id) {
+            answerMap.set(a.question.id, a)
+          }
+        })
+      }
+
+      const mergedQuestions = (questionData || []).map((q) => {
+        const foundAnswer = answerMap.get(q.id) || q.answers?.[0]
+        return {
+          ...q,
+          answers: foundAnswer ? [foundAnswer] : (q.answers || [])
+        }
+      })
+
       setInterview(interviewData)
-      setQuestions(questionData || [])
+      setQuestions(mergedQuestions)
     } catch (err) {
       setError(err.message || "Failed to load interview results")
     } finally {
@@ -72,10 +91,10 @@ export default function InterviewResult() {
   if (!interview) return null
 
   const skillBreakdown = [
-    { name: "Technical Depth", score: interview.technicalScore ?? 0 },
-    { name: "HR / Correctness", score: interview.hrScore ?? 0 },
-    { name: "Communication", score: interview.communicationScore ?? 0 },
-    { name: "Overall", score: interview.overallScore ?? 0 },
+    { name: "Technical Depth", value: interview.technicalScore ?? 0, score: interview.technicalScore ?? 0 },
+    { name: "HR / Correctness", value: interview.hrScore ?? 0, score: interview.hrScore ?? 0 },
+    { name: "Communication", value: interview.communicationScore ?? 0, score: interview.communicationScore ?? 0 },
+    { name: "Overall", value: interview.overallScore ?? 0, score: interview.overallScore ?? 0 },
   ]
 
   let positives = []

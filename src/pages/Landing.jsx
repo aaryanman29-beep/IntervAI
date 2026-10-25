@@ -1,22 +1,35 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useState } from "react"
 import {
   ArrowRight,
   BrainCircuit,
   Check,
   ChevronRight,
-  Code2,
   Sparkles,
-  User,
   Zap,
   TrendingUp,
   FileText,
   BarChart3,
   MessageSquareText,
-  Target
+  Target,
+  Search,
+  Code2,
+  Database,
+  Cpu,
+  Layers,
+  ShieldCheck,
+  Briefcase,
+  PlayCircle,
+  Users,
+  Compass,
+  Star,
+  BookOpen
 } from "lucide-react"
 import { Link } from "react-router"
 import Button from "../components/common/Button"
+import Badge from "../components/common/Badge"
 import { roles } from "../utils/constants"
+import { usePageMeta } from "../hooks/usePageMeta"
+import StructuredData from "../components/common/StructuredData"
 
 function useScrollReveal() {
   useEffect(() => {
@@ -28,24 +41,43 @@ function useScrollReveal() {
           }
         })
       },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
+      { threshold: 0.1, rootMargin: "0px 0px -40px 0px" }
     )
     document.querySelectorAll(".reveal").forEach((el) => observer.observe(el))
     return () => observer.disconnect()
   }, [])
 }
 
-import { usePageMeta } from "../hooks/usePageMeta"
-import StructuredData from "../components/common/StructuredData"
+const roleTracks = [
+  { name: "Software Engineering", icon: Code2, count: "1,200+ questions", slug: "software-engineering", desc: "Algorithms, concurrency, architecture, & coding loops." },
+  { name: "System Design", icon: Layers, count: "450+ diagrams", slug: "system-design", desc: "Scalability, microservices, databases, and trade-offs." },
+  { name: "Product Management", icon: Compass, count: "800+ cases", slug: "pm", desc: "Product sense, metric design, strategy, and execution." },
+  { name: "Machine Learning", icon: Cpu, count: "350+ loops", slug: "ml-engineer", desc: "Deep learning, LLMs, model evaluation, & MLOps." },
+  { name: "Data Engineering", icon: Database, count: "400+ scenarios", slug: "data-engineering", desc: "ETL pipelines, data warehousing, SQL, and Kafka." },
+  { name: "Behavioral & Leadership", icon: Users, count: "600+ questions", slug: "behavioral", desc: "STAR method, conflict resolution, and culture fit." }
+]
+
+const companies = [
+  { name: "Google", domain: "google.com" },
+  { name: "Meta", domain: "meta.com" },
+  { name: "Amazon", domain: "amazon.com" },
+  { name: "Microsoft", domain: "microsoft.com" },
+  { name: "OpenAI", domain: "openai.com" },
+  { name: "Apple", domain: "apple.com" },
+  { name: "Stripe", domain: "stripe.com" },
+  { name: "Netflix", domain: "netflix.com" }
+]
 
 export default function Landing() {
   useScrollReveal()
 
   usePageMeta({
-    title: "AI Mock Interview Practice & Instant Coaching",
-    description: "Prepare smarter and interview better with AI-powered mock interviews, real-time answer evaluations, and personalized preparation roadmaps.",
+    title: "IntervAI · Interview prep for engineering, product, and tech careers",
+    description: "Prepare smarter with AI-powered mock interviews, 1,000+ real interview questions, instant answer evaluations, and personalized preparation roadmaps.",
     canonicalPath: "/",
   })
+
+  const [activeCategory, setActiveCategory] = useState("all")
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -67,442 +99,479 @@ export default function Landing() {
   }
 
   return (
-    <div id="main-content" className="min-h-screen bg-canvas font-sans selection:bg-primary-soft selection:text-primary overflow-x-hidden">
+    <div id="main-content" className="min-h-screen bg-[#fafafa] font-sans selection:bg-indigo-100 selection:text-indigo-700 text-slate-900">
       <StructuredData data={structuredData} />
       
-      {/* FLOATING NAVBAR */}
-      <div className="fixed top-0 left-0 right-0 z-50 flex justify-center p-4">
-        <nav className="glass-nav flex items-center justify-between rounded-full px-6 py-3 w-full max-w-6xl shadow-sm transition-all duration-300">
-          <Link to="/" className="flex items-center gap-2.5 font-display text-lg font-extrabold" aria-label="IntervAI home">
-            <img
-              src={new URL("../assets/intervai-mark.webp", import.meta.url).href}
-              alt="IntervAI brand emblem"
-              width="32"
-              height="32"
-              loading="eager"
-              decoding="async"
-              className="size-8 rounded-lg object-cover"
-            />
-            <span className="hidden sm:inline">IntervAI</span>
-          </Link>
-          <div className="hidden md:flex items-center gap-8 text-sm font-semibold text-muted">
-            <a href="#how" className="hover:text-primary transition-colors">How it works</a>
-            <a href="#features" className="hover:text-primary transition-colors">Features</a>
-            <a href="#roles" className="hover:text-primary transition-colors">Roles</a>
+      {/* ACED-STYLE TOP NAVIGATION BAR */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80 aced-nav-shadow">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+          
+          {/* Logo & Brand */}
+          <div className="flex items-center gap-8">
+            <Link to="/" className="flex items-center gap-2.5" aria-label="IntervAI home">
+              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-sm shadow-indigo-500/20">
+                I
+              </div>
+              <span className="font-display font-extrabold text-xl tracking-tight text-slate-900">
+                Interv<span className="text-indigo-600">AI</span>
+              </span>
+              <span className="hidden xl:inline-block text-[11px] font-medium text-slate-400 border-l border-slate-200 pl-2.5">
+                AI Tech Prep
+              </span>
+            </Link>
+
+            {/* Desktop Navigation Links */}
+            <nav className="hidden md:flex items-center gap-1 lg:gap-2 text-sm font-medium text-slate-600">
+              <Link to="/questions" className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100/70 transition-colors">
+                Questions
+              </Link>
+              <Link to="/interview/setup" className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100/70 transition-colors flex items-center gap-1.5">
+                Mock Loops <Badge variant="New" className="text-[10px] px-1.5 py-0">New</Badge>
+              </Link>
+              <a href="#features" className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100/70 transition-colors">
+                AI Coach
+              </a>
+              <a href="#how" className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100/70 transition-colors">
+                How it Works
+              </a>
+              <Link to="/contact" className="px-3 py-1.5 rounded-md hover:text-slate-900 hover:bg-slate-100/70 transition-colors">
+                Contact
+              </Link>
+            </nav>
           </div>
-          <div className="flex items-center gap-2">
-            <Button to="/login" variant="ghost" className="hidden sm:inline-flex rounded-full text-sm font-semibold">
-              Sign In
+
+          {/* Right Header CTAs & Search Trigger */}
+          <div className="flex items-center gap-3">
+            <Link
+              to="/questions"
+              className="hidden lg:flex items-center gap-2 border border-slate-200 bg-slate-50 hover:bg-white hover:border-slate-300 rounded-lg px-3 py-1.5 text-xs text-slate-400 transition-colors w-44"
+            >
+              <Search className="size-3.5 text-slate-400" />
+              <span className="truncate">Search questions...</span>
+              <span className="ml-auto text-[10px] bg-white border border-slate-200 px-1 py-0.5 rounded text-slate-400 font-mono">⌘K</span>
+            </Link>
+
+            <Button to="/login" variant="ghost" size="sm" className="hidden sm:inline-flex text-slate-700">
+              Log in
             </Button>
-            <Button to="/register" className="rounded-full text-sm px-5 shadow-md shadow-primary/20">
-              Start Practicing <ArrowRight className="size-4 ml-1" />
+            <Button to="/register" size="sm" className="rounded-md font-semibold px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs">
+              Get Started <span className="opacity-70 ml-1">→</span>
             </Button>
           </div>
-        </nav>
-      </div>
+        </div>
+      </header>
 
       <main>
-        {/* HERO SECTION */}
-        <section className="relative pt-40 pb-20 flex flex-col items-center text-center">
-          <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] -z-10"></div>
-
-          <div className="max-w-4xl px-5 relative z-10 reveal">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-1.5 text-xs font-bold text-primary shadow-sm mb-8 border border-line">
-              <Sparkles className="size-4" />
-              <span>Your AI-powered interview coach</span>
+        {/* HERO SECTION (Clean White, Pill Badge, Large Bold Typo, Role Strip) */}
+        <section className="bg-white pt-16 pb-16 md:pt-24 md:pb-20 border-b border-slate-200/70">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center reveal">
+            
+            {/* Pill Banner */}
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-slate-200 bg-slate-50 text-xs font-medium text-slate-600 mb-6 hover:border-slate-300 transition-colors">
+              <Sparkles className="size-3.5 text-indigo-600" />
+              <span>Next-Gen AI Interview Coaching & Instant Scorecards</span>
+              <ChevronRight className="size-3 text-slate-400" />
             </div>
-            
-            <h1 className="font-display text-5xl md:text-7xl lg:text-[80px] font-extrabold text-ink leading-[1.05] tracking-tight mb-8">
-              Prepare Smarter. <br />
-              <span className="text-primary">Interview Better.</span>
+
+            {/* Main Title */}
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.08] mb-6">
+              Everything you need to <br className="hidden sm:inline" />
+              <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent">
+                ace your tech interviews
+              </span>
             </h1>
-            
-            <p className="text-lg md:text-xl text-muted max-w-2xl mx-auto mb-10 leading-relaxed">
-              Practice real interview questions, simulate realistic interviews, and get AI-powered feedback to build the confidence to land your next role.
+
+            {/* Subtitle */}
+            <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-600 font-normal leading-relaxed mb-8">
+              Level up your career with AI-powered mock interviews, real interview questions from top tech companies, adaptive follow-ups, and personalized skill roadmaps.
             </p>
 
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Button to="/register" size="lg" icon={ArrowRight} className="rounded-full shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all px-8 py-4 text-base font-bold">
-                Start Practicing
+            {/* Action Buttons */}
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 mb-14">
+              <Button to="/register" size="lg" className="w-full sm:w-auto font-semibold px-6 py-3 rounded-lg shadow-sm">
+                Get started for free <ArrowRight className="size-4 ml-1.5 opacity-80" />
               </Button>
-              <Button to="/questions" variant="ghost" size="lg" className="rounded-full px-8 py-4 text-base font-bold bg-white/50 hover:bg-white border border-line">
+              <Button to="/questions" variant="secondary" size="lg" className="w-full sm:w-auto font-semibold px-6 py-3 rounded-lg">
+                Browse Question Bank
+              </Button>
+            </div>
+
+            {/* HORIZONTAL ROLE STRIP (Aced-style icon boxes) */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 pt-6 border-t border-slate-100 text-left">
+              {roleTracks.map((track) => {
+                const IconComponent = track.icon
+                return (
+                  <Link
+                    key={track.name}
+                    to="/interview/setup"
+                    className="p-4 rounded-xl border border-slate-200/90 bg-white hover:border-indigo-300 hover:bg-slate-50/70 hover:shadow-xs transition-all flex flex-col justify-between group"
+                  >
+                    <div className="w-9 h-9 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3 group-hover:scale-105 transition-transform">
+                      <IconComponent className="size-5" />
+                    </div>
+                    <div>
+                      <div className="text-sm font-bold text-slate-900 leading-snug group-hover:text-indigo-600 transition-colors">
+                        {track.name}
+                      </div>
+                      <div className="text-[11px] text-slate-400 mt-1 font-medium">
+                        {track.count}
+                      </div>
+                    </div>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* TRUSTED SOCIAL PROOF & LOGOS (Aced Style) */}
+        <section className="bg-slate-50/80 py-12 border-b border-slate-200/70">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 text-center">
+            <p className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-6">
+              Candidates who practiced on IntervAI have landed offers at top companies
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-6 items-center justify-center">
+              {companies.map((comp) => (
+                <div key={comp.name} className="flex items-center justify-center py-2 px-3 bg-white/70 rounded-lg border border-slate-200/60 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-200 transition-all">
+                  {comp.name}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* PRODUCT HIGHLIGHTS (Aced 3-Feature Split Showcase) */}
+        <section id="features" className="py-20 bg-white">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="text-center max-w-3xl mx-auto mb-16 reveal">
+              <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                Core Capabilities
+              </span>
+              <h2 className="mt-4 text-3xl sm:text-4xl font-extrabold text-slate-900 font-display tracking-tight">
+                The all-in-one platform for technical interview mastery
+              </h2>
+              <p className="mt-3 text-base text-slate-600">
+                Designed to simulate the pressure and format of real interview loops with top tech companies.
+              </p>
+            </div>
+
+            <div className="space-y-16">
+              
+              {/* Feature 1: Adaptive Mock Loops */}
+              <div className="grid md:grid-cols-2 gap-10 items-center reveal">
+                <div className="order-2 md:order-1">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 mb-2">
+                    <Zap className="size-4" /> Real-Time Adaptive AI
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display mb-3">
+                    Adaptive mock interviews that listen and probe deeper
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed mb-6">
+                    Unlike static question checklists, IntervAI parses your exact answers and immediately generates dynamic follow-up questions to test your technical depth, edge cases, and reasoning.
+                  </p>
+                  <ul className="space-y-2.5 mb-6 text-sm text-slate-700 font-medium">
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Live audio speech-to-text recording with mic detection
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Dynamic difficulty scaling from Junior to Staff level
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Contextual follow-ups based on the candidate's exact responses
+                    </li>
+                  </ul>
+                  <Link to="/interview/setup" className="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700">
+                    Try a mock interview loop →
+                  </Link>
+                </div>
+                
+                {/* Visual Card 1 */}
+                <div className="order-1 md:order-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm">
+                  <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-bold">
+                          AI
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-slate-900">IntervAI Voice Session</div>
+                          <div className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Active Loop · Question 3 of 5
+                          </div>
+                        </div>
+                      </div>
+                      <Badge variant="New">System Design</Badge>
+                    </div>
+
+                    <div className="text-sm font-semibold text-slate-800 bg-slate-50 p-3.5 rounded-lg border border-slate-200/60 leading-relaxed">
+                      "You mentioned utilizing Redis caching in front of PostgreSQL. What eviction policy would you configure and how do you mitigate cache stampede?"
+                    </div>
+
+                    <div className="p-3 bg-indigo-50/60 rounded-lg border border-indigo-100 text-xs text-indigo-900 font-medium">
+                      💡 <strong>AI Evaluator Note:</strong> Listening for mutex locking, probabilistic early expiration (XFetch), or background cache replenishment.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Feature 2: Instant Multi-Dimensional Scoring */}
+              <div className="grid md:grid-cols-2 gap-10 items-center reveal">
+                <div className="order-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm">
+                  <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs">
+                    <div className="flex items-center justify-between mb-4">
+                      <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Evaluation Scorecard</span>
+                      <span className="text-2xl font-display font-extrabold text-indigo-600">88/100</span>
+                    </div>
+
+                    <div className="space-y-4">
+                      {[
+                        { label: "Technical Correctness", score: 92, color: "bg-emerald-500" },
+                        { label: "Communication Clarity", score: 85, color: "bg-indigo-600" },
+                        { label: "System Depth & Edge Cases", score: 88, color: "bg-purple-600" },
+                        { label: "Structured Delivery", score: 80, color: "bg-amber-500" }
+                      ].map((item) => (
+                        <div key={item.label}>
+                          <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1">
+                            <span>{item.label}</span>
+                            <span>{item.score}%</span>
+                          </div>
+                          <div className="w-full bg-slate-100 rounded-full h-2">
+                            <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.score}%` }}></div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="order-1">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 mb-2">
+                    <BarChart3 className="size-4" /> Granular Feedback
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display mb-3">
+                    Actionable scorecards, not vague advice
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed mb-6">
+                    Every interview session generates a complete rubric breakdown. IntervAI highlights your exact strong points, identifies blindspots, and creates a tailored study roadmap.
+                  </p>
+                  <ul className="space-y-2.5 mb-6 text-sm text-slate-700 font-medium">
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Detailed strengths and weaknesses for each answered prompt
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Optimal reference answer comparison with model scripts
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Personalized roadmap generation linking relevant resources
+                    </li>
+                  </ul>
+                  <Link to="/questions" className="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700">
+                    Explore sample evaluations →
+                  </Link>
+                </div>
+              </div>
+
+              {/* Feature 3: Resume Intelligence */}
+              <div className="grid md:grid-cols-2 gap-10 items-center reveal">
+                <div className="order-2 md:order-1">
+                  <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-600 mb-2">
+                    <FileText className="size-4" /> ATS & Skill Matching
+                  </div>
+                  <h3 className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-display mb-3">
+                    Targeted practice aligned to your real resume
+                  </h3>
+                  <p className="text-slate-600 leading-relaxed mb-6">
+                    Upload your PDF resume. IntervAI extracts your technologies, years of experience, and past achievements to curate an interview loop tailored to your career transition.
+                  </p>
+                  <ul className="space-y-2.5 mb-6 text-sm text-slate-700 font-medium">
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Instant ATS parse score and missing keyword analysis
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Automatic generation of project-deep-dive interview questions
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <Check className="size-4 text-emerald-500 shrink-0" />
+                      Custom interview simulation based on your selected target role
+                    </li>
+                  </ul>
+                  <Link to="/interview/setup" className="inline-flex items-center text-sm font-bold text-indigo-600 hover:text-indigo-700">
+                    Upload resume to start →
+                  </Link>
+                </div>
+
+                <div className="order-1 md:order-2 rounded-2xl border border-slate-200 bg-slate-50/50 p-6 shadow-sm">
+                  <div className="bg-white rounded-xl border border-slate-200 p-5 shadow-xs space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                      <div className="flex items-center gap-2 font-bold text-sm text-slate-800">
+                        <FileText className="size-4 text-indigo-600" /> Resume Profile
+                      </div>
+                      <Badge variant="Easy">ATS Score: 88%</Badge>
+                    </div>
+                    <div>
+                      <div className="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+                        Detected Core Stack
+                      </div>
+                      <div className="flex flex-wrap gap-1.5">
+                        {["Java", "Spring Boot", "React", "PostgreSQL", "Docker", "AWS", "System Architecture"].map(tech => (
+                          <span key={tech} className="text-xs bg-slate-100 text-slate-700 font-medium px-2 py-0.5 rounded border border-slate-200">
+                            {tech}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="p-3 bg-emerald-50 rounded-lg border border-emerald-100 text-xs text-emerald-800 font-medium">
+                      ✓ Ready for: Senior Backend Engineer & Cloud Architecture Loops
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
+        {/* QUESTION BANK SECTION PREVIEW (Aced Style) */}
+        <section className="py-20 bg-slate-50 border-t border-slate-200/70">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 reveal">
+              <div>
+                <span className="text-xs font-bold text-indigo-600 uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+                  Real Interview Questions
+                </span>
+                <h2 className="mt-3 text-3xl sm:text-4xl font-extrabold text-slate-900 font-display tracking-tight">
+                  Popular questions asked by top tech teams
+                </h2>
+              </div>
+              <Link to="/questions" className="mt-4 md:mt-0 text-sm font-bold text-indigo-600 hover:text-indigo-700 flex items-center gap-1">
+                Browse all questions <ArrowRight className="size-4" />
+              </Link>
+            </div>
+
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5 reveal">
+              {[
+                { title: "Design a URL shortener like Bitly", role: "System Design", type: "Architecture", diff: "Medium", count: "142 answers" },
+                { title: "Explain how Java Virtual Machine manages garbage collection", role: "Software Engineer", type: "Technical", diff: "Hard", count: "98 answers" },
+                { title: "How do you handle a disagreement with a product manager?", role: "Leadership", type: "Behavioral", diff: "Medium", count: "210 answers" },
+                { title: "Design a distributed rate limiter for high-traffic microservices", role: "Backend Engineer", type: "Architecture", diff: "Hard", count: "86 answers" },
+                { title: "Tell me about a time an outage occurred and how you handled incident response", role: "DevOps / SRE", type: "Behavioral", diff: "Medium", count: "174 answers" },
+                { title: "Implement an LRU Cache with O(1) operations", role: "Algorithms", type: "Coding", diff: "Medium", count: "320 answers" }
+              ].map((q) => (
+                <div key={q.title} className="bg-white p-5 rounded-xl border border-slate-200 hover:border-slate-300 hover:shadow-xs transition-all flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge variant="New">{q.type}</Badge>
+                      <Badge>{q.diff}</Badge>
+                      <span className="text-xs text-slate-400 font-medium ml-auto">{q.role}</span>
+                    </div>
+                    <Link to="/questions" className="block text-base font-bold text-slate-900 hover:text-indigo-600 transition-colors leading-snug">
+                      {q.title}
+                    </Link>
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500 font-medium">
+                    <span>{q.count}</span>
+                    <Link to="/questions" className="text-indigo-600 font-bold hover:underline flex items-center gap-1">
+                      Practice <ArrowRight className="size-3" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* CALL TO ACTION BANNER (Aced Style) */}
+        <section className="bg-white py-20 border-t border-slate-200/80">
+          <div className="max-w-4xl mx-auto px-4 sm:px-6 text-center reveal">
+            <h2 className="text-3xl sm:text-5xl font-extrabold text-slate-900 font-display tracking-tight mb-4">
+              Ready to land your dream tech role?
+            </h2>
+            <p className="text-lg text-slate-600 mb-8 max-w-xl mx-auto">
+              Join thousands of engineers, product managers, and data leaders preparing smarter with IntervAI.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-3">
+              <Button to="/register" size="lg" className="rounded-lg font-semibold px-8 py-3.5 shadow-sm">
+                Create your free account →
+              </Button>
+              <Button to="/questions" variant="secondary" size="lg" className="rounded-lg font-semibold px-6 py-3.5">
                 Explore Questions
               </Button>
             </div>
           </div>
-
-          {/* FLOATING HERO UI CARDS (Desktop Only) */}
-          <div className="relative w-full max-w-6xl mx-auto mt-20 h-[250px] md:h-[450px] reveal reveal-delay-2 hidden md:block">
-             
-             {/* Card 1: Resume Match */}
-             <div className="absolute left-8 top-16 w-64 bg-white p-5 rounded-3xl card-shadow border border-line animate-float-delayed z-20">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="text-xs font-bold text-muted uppercase tracking-wide">Resume Match</div>
-                  <div className="text-success font-bold text-lg">92%</div>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm font-medium text-ink"><Check className="size-4 text-success"/> Skills detected</div>
-                  <div className="flex items-center gap-2 text-sm font-medium text-ink"><Check className="size-4 text-success"/> Experience matched</div>
-                  <div className="flex items-center gap-2 text-sm font-medium text-ink"><Check className="size-4 text-success"/> Keywords optimized</div>
-                </div>
-             </div>
-
-             {/* Card 2: Interview Score */}
-             <div className="absolute right-8 top-0 w-60 bg-white p-5 rounded-3xl card-shadow border border-line animate-float z-20">
-                <div className="text-xs font-bold text-muted uppercase mb-2 tracking-wide">Overall Score</div>
-                <div className="flex items-end gap-2 mb-4">
-                  <div className="text-5xl font-display font-extrabold text-primary">87</div>
-                  <div className="text-sm font-semibold text-muted mb-2">/ 100</div>
-                </div>
-                <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                  <div className="bg-primary h-full w-[87%] rounded-full"></div>
-                </div>
-                <div className="mt-4 flex justify-between text-xs font-semibold text-muted">
-                  <span>Technical</span>
-                  <span className="text-ink">91%</span>
-                </div>
-             </div>
-
-             {/* Card 3: AI Interview Session */}
-             <div className="absolute left-1/2 -translate-x-1/2 top-32 w-full max-w-[500px] bg-white p-6 rounded-3xl card-shadow border border-line animate-float-slow z-30">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-line">
-                   <div className="flex items-center gap-3">
-                     <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white">
-                       <BrainCircuit className="size-5" />
-                     </div>
-                     <div>
-                       <div className="font-bold text-ink">AI Interviewer</div>
-                       <div className="text-xs text-success font-semibold flex items-center gap-1">
-                         <span className="w-2 h-2 rounded-full bg-success animate-pulse"></span>
-                         Live Session
-                       </div>
-                     </div>
-                   </div>
-                   <div className="text-xs font-bold bg-canvas px-3 py-1.5 rounded-lg text-muted">08:42</div>
-                </div>
-                <div className="text-primary text-xs font-bold uppercase tracking-wider mb-2">Question 4 of 10</div>
-                <div className="text-lg font-display font-bold text-ink leading-snug">
-                  "Tell me about a challenging project you worked on and how you solved the problem."
-                </div>
-             </div>
-          </div>
         </section>
-
-        {/* LOGOS / TRUST (Optional visual padding) */}
-        <div className="py-10 border-y border-line/50 bg-white/50 text-center text-sm font-bold text-muted tracking-widest uppercase reveal">
-          AI-POWERED INTERVIEW PREPARATION
-        </div>
-
-        {/* PROBLEM SECTION */}
-        <section className="py-24 bg-white relative">
-          <div className="max-w-7xl mx-auto px-5">
-            <div className="text-center max-w-3xl mx-auto mb-20 reveal">
-               <h2 className="font-display text-4xl md:text-5xl font-extrabold text-ink mb-6">
-                 Interviews shouldn't be a guessing game.
-               </h2>
-               <p className="text-lg text-muted">
-                 We've completely reimagined how you prepare for your next role.
-               </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {[
-                { num: "01", title: "Generic Questions", desc: "Practice questions often don't match your actual target role." },
-                { num: "02", title: "Limited Feedback", desc: "Knowing an answer was wrong isn't enough. You need to know why." },
-                { num: "03", title: "No Follow-Ups", desc: "Real interviewers ask adaptive questions based on your answers." },
-                { num: "04", title: "Unclear Roadmap", desc: "Candidates often don't know what to improve next." }
-              ].map((item, i) => (
-                <div key={item.num} className={`reveal reveal-delay-${i % 4} bg-canvas rounded-3xl p-8 border border-line transition-all hover:shadow-lg hover:-translate-y-1`}>
-                   <div className="text-4xl font-display font-extrabold text-primary-soft mb-4 text-primary opacity-40">{item.num}</div>
-                   <h3 className="text-xl font-bold text-ink mb-3">{item.title}</h3>
-                   <p className="text-muted leading-relaxed text-sm">{item.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* HOW IT WORKS / RESUME ANALYSIS */}
-        <section id="how" className="py-24 bg-ink text-white overflow-hidden relative">
-          <div className="max-w-7xl mx-auto px-5">
-            <div className="mb-20 reveal">
-               <div className="text-primary-soft text-sm font-bold uppercase tracking-wider mb-4">How it works</div>
-               <h2 className="font-display text-4xl md:text-5xl font-extrabold mb-6">
-                 From resume to interview-ready.
-               </h2>
-               <p className="text-slate-400 text-lg max-w-2xl">
-                 A simple, repeatable loop designed to make every practice session count.
-               </p>
-            </div>
-
-            <div className="grid lg:grid-cols-[1fr_1.2fr] gap-16 items-center">
-               <div className="space-y-8 reveal">
-                  {[
-                    { step: "01", title: "Upload Resume", desc: "IntervAI understands your skills and target roles." },
-                    { step: "02", title: "Choose Interview", desc: "Select between Technical, Behavioral, or HR formats." },
-                    { step: "03", title: "Practice With AI", desc: "Answer realistic questions with adaptive follow-ups." },
-                    { step: "04", title: "Get Evaluated", desc: "Receive AI-powered performance feedback immediately." },
-                    { step: "05", title: "Follow Your Roadmap", desc: "Know exactly what to improve next." }
-                  ].map((s, i) => (
-                     <div key={s.step} className="flex gap-6 group">
-                        <div className="flex flex-col items-center">
-                          <div className="w-12 h-12 rounded-full bg-white/5 flex items-center justify-center font-display font-bold text-lg group-hover:bg-primary transition-colors border border-white/10">
-                            {s.step}
-                          </div>
-                          {i !== 4 && <div className="w-0.5 h-12 bg-white/5 mt-4 group-hover:bg-primary/50 transition-colors"></div>}
-                        </div>
-                        <div className="pt-2">
-                          <h3 className="text-xl font-bold mb-2">{s.title}</h3>
-                          <p className="text-slate-400 text-sm leading-relaxed">{s.desc}</p>
-                        </div>
-                     </div>
-                  ))}
-               </div>
-               
-               <div className="relative reveal reveal-delay-2 hidden lg:block">
-                  <div className="bg-white/5 border border-white/10 rounded-[40px] p-8 backdrop-blur-sm shadow-2xl relative">
-                     <div className="bg-white text-ink rounded-3xl p-6 shadow-2xl relative z-20">
-                        <div className="flex justify-between items-center mb-6 border-b border-line pb-4">
-                          <div className="font-bold text-lg flex items-center gap-2"><FileText className="size-5 text-primary"/> Resume Analysis</div>
-                          <div className="px-3 py-1 bg-success/10 text-success rounded-full text-xs font-bold">92% Match</div>
-                        </div>
-                        <div className="space-y-4">
-                          <div className="bg-canvas p-4 rounded-2xl border border-line">
-                             <div className="text-xs font-bold text-muted mb-3 uppercase tracking-wide">Skills Found</div>
-                             <div className="flex flex-wrap gap-2">
-                               {["Java", "Spring Boot", "React", "Python"].map(skill => (
-                                 <span key={skill} className="px-3 py-1.5 bg-white border border-line rounded-lg text-sm font-semibold shadow-sm">{skill}</span>
-                               ))}
-                             </div>
-                          </div>
-                          <div className="bg-primary-soft/50 p-4 rounded-2xl border border-primary/10">
-                             <div className="text-xs font-bold text-primary mb-2 uppercase tracking-wide">AI Suggestion</div>
-                             <p className="text-sm text-ink leading-relaxed">Your backend experience is strong. We recommend generating mock interviews focused on System Design and advanced Spring Boot concepts.</p>
-                          </div>
-                        </div>
-                     </div>
-                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-primary/20 rounded-full blur-[80px] -z-10"></div>
-                  </div>
-               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* FEATURES / ADAPTIVE FOLLOW-UP SECTION */}
-        <section id="features" className="py-24 bg-canvas relative">
-           <div className="max-w-7xl mx-auto px-5">
-              <div className="text-center max-w-3xl mx-auto mb-20 reveal">
-                 <h2 className="font-display text-4xl md:text-5xl font-extrabold text-ink mb-6">
-                   Practice like it's the real thing.
-                 </h2>
-                 <p className="text-lg text-muted">
-                   IntervAI doesn't just read questions. It listens, analyzes, and asks adaptive follow-ups based on your exact answers.
-                 </p>
-              </div>
-
-              <div className="max-w-4xl mx-auto reveal reveal-delay-1">
-                 <div className="bg-white rounded-[40px] p-6 md:p-12 border border-line card-shadow relative">
-                    <div className="absolute -top-4 -right-2 md:-right-4 bg-primary text-white text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 shadow-lg">
-                      <Zap className="size-4 fill-white" /> Adaptive Follow-up
-                    </div>
-
-                    <div className="space-y-8">
-                       <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-full bg-primary flex-shrink-0 flex items-center justify-center text-white mt-1">
-                            <BrainCircuit className="size-5" />
-                          </div>
-                          <div className="bg-canvas p-5 rounded-2xl rounded-tl-sm text-ink font-medium leading-relaxed">
-                            "Why did you choose MongoDB for your last project instead of a relational database?"
-                          </div>
-                       </div>
-
-                       <div className="flex gap-4 flex-row-reverse">
-                          <div className="w-10 h-10 rounded-full bg-slate-200 flex-shrink-0 flex items-center justify-center text-muted mt-1">
-                            <User className="size-5" />
-                          </div>
-                          <div className="bg-ink text-white p-5 rounded-2xl rounded-tr-sm font-medium leading-relaxed max-w-[85%]">
-                            "I chose MongoDB because our data schema was highly unstructured and rapidly evolving, which allowed us to iterate faster."
-                          </div>
-                       </div>
-
-                       <div className="flex gap-4">
-                          <div className="w-10 h-10 rounded-full bg-primary flex-shrink-0 flex items-center justify-center text-white mt-1">
-                            <BrainCircuit className="size-5" />
-                          </div>
-                          <div className="bg-primary-soft border border-primary/20 p-5 rounded-2xl rounded-tl-sm text-ink font-medium leading-relaxed relative">
-                            "Interesting. How would your choice change if the application required strong relational consistency and complex financial transactions?"
-                          </div>
-                       </div>
-                    </div>
-                 </div>
-              </div>
-           </div>
-        </section>
-
-        {/* PERFORMANCE INTELLIGENCE */}
-        <section className="py-24 bg-white relative overflow-hidden">
-          <div className="max-w-7xl mx-auto px-5">
-             <div className="grid lg:grid-cols-[1fr_1.1fr] gap-16 items-center">
-                <div className="relative reveal order-2 lg:order-1 hidden sm:block">
-                   <div className="bg-canvas border border-line rounded-[32px] p-8 card-shadow">
-                      <div className="text-center mb-8">
-                         <div className="text-muted font-bold text-sm uppercase tracking-wider mb-2">Overall Score</div>
-                         <div className="text-[80px] font-display font-extrabold text-primary leading-none">87<span className="text-3xl text-slate-300">/100</span></div>
-                      </div>
-                      
-                      <div className="space-y-6">
-                         {[
-                           { label: "Technical Knowledge", val: 92 },
-                           { label: "Communication", val: 81 },
-                           { label: "Confidence", val: 76 },
-                           { label: "Problem Solving", val: 89 }
-                         ].map(stat => (
-                           <div key={stat.label}>
-                             <div className="flex justify-between text-sm font-bold mb-2">
-                               <span className="text-ink">{stat.label}</span>
-                               <span className="text-muted">{stat.val}%</span>
-                             </div>
-                             <div className="w-full bg-slate-200 rounded-full h-2">
-                               <div className="bg-primary h-full rounded-full" style={{ width: `${stat.val}%` }}></div>
-                             </div>
-                           </div>
-                         ))}
-                      </div>
-                   </div>
-                </div>
-
-                <div className="reveal reveal-delay-2 order-1 lg:order-2">
-                   <div className="text-primary-soft text-sm font-bold uppercase tracking-wider mb-4 text-primary">Performance Insights</div>
-                   <h2 className="font-display text-4xl md:text-5xl font-extrabold text-ink mb-6 leading-tight">
-                     Know exactly how you performed.
-                   </h2>
-                   <p className="text-lg text-muted mb-10 leading-relaxed">
-                     Turn feedback into progress. Our AI evaluates your answers across multiple dimensions, giving you a clear picture of your strengths and a personalized roadmap for what to study next.
-                   </p>
-                   
-                   <div className="bg-canvas rounded-2xl p-6 border border-line shadow-sm">
-                      <div className="flex items-start gap-4">
-                         <div className="bg-white p-3 rounded-xl shadow-sm text-primary">
-                            <TrendingUp className="size-6" />
-                         </div>
-                         <div>
-                            <h4 className="font-bold text-ink mb-1 text-lg">Next Up: System Design</h4>
-                            <p className="text-sm text-muted leading-relaxed">Based on your last interview, we recommend focusing on <span className="font-semibold text-ink">Scalability</span> and <span className="font-semibold text-ink">Load Balancing</span>.</p>
-                         </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
-          </div>
-        </section>
-
-        {/* ROLES */}
-        <section id="roles" className="bg-ink py-24 text-white overflow-hidden">
-          <div className="mx-auto max-w-7xl px-5 reveal">
-            <div className="flex flex-col md:flex-row justify-between gap-6 md:items-end mb-12">
-              <div>
-                <p className="text-sm font-bold text-primary-soft uppercase tracking-wider mb-2">
-                  Popular Roles
-                </p>
-                <h2 className="font-display text-4xl font-extrabold">
-                  Practice for the role you want.
-                </h2>
-              </div>
-              <p className="max-w-md text-slate-400">
-                Curated question sets and interview formats built for today's most in-demand careers.
-              </p>
-            </div>
-            
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {roles.map((role, i) => (
-                <Link
-                  to="/interview/setup"
-                  key={role}
-                  className={`reveal reveal-delay-${i % 4} group flex items-center justify-between rounded-2xl border border-white/10 bg-white/5 p-5 font-semibold transition hover:border-primary hover:bg-primary/20 backdrop-blur-sm`}
-                >
-                  <span className="flex items-center gap-3">
-                    <Code2 className="size-5 text-primary-soft" />
-                    {role}
-                  </span>
-                  <ChevronRight className="size-4 text-slate-400 transition group-hover:translate-x-1 group-hover:text-white" />
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FINAL CTA */}
-        <section className="py-32 bg-white text-center relative overflow-hidden">
-           <div className="absolute inset-0 bg-canvas/50"></div>
-           <div className="max-w-3xl mx-auto px-5 relative z-10 reveal">
-              <h2 className="font-display text-5xl md:text-6xl font-extrabold text-ink mb-6 leading-tight">
-                Ready for your next interview?
-              </h2>
-              <p className="text-xl text-muted mb-10">
-                Stop guessing. Start practicing today.
-              </p>
-              <Button to="/interview/setup" size="lg" className="rounded-full px-12 py-5 text-lg font-bold shadow-xl shadow-primary/20 hover:-translate-y-1 transition-transform">
-                Start Your Interview <ArrowRight className="ml-2 size-5" />
-              </Button>
-           </div>
-        </section>
-
       </main>
 
-      {/* FOOTER */}
-      <footer className="bg-white border-t border-line py-16">
-         <div className="max-w-7xl mx-auto px-5">
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-16">
-               <div className="col-span-2">
-                  <Link to="/" className="flex items-center gap-2 font-display text-xl font-extrabold mb-4 text-ink">
-                     <img
-                       src={new URL("../assets/intervai-mark.webp", import.meta.url).href}
-                       alt="IntervAI brand emblem"
-                       width="32"
-                       height="32"
-                       loading="lazy"
-                       decoding="async"
-                       className="size-8 rounded-lg"
-                     />
-                     IntervAI
-                  </Link>
-                  <p className="text-sm text-muted max-w-xs leading-relaxed">
-                    AI-powered interview preparation designed to build confidence and help you land your next role.
-                  </p>
-               </div>
-               <div>
-                  <h4 className="font-bold text-ink mb-4">Product</h4>
-                  <ul className="space-y-3 text-sm text-muted">
-                     <li><a href="#features" className="hover:text-primary transition-colors">Features</a></li>
-                     <li><a href="#how" className="hover:text-primary transition-colors">How It Works</a></li>
-                     <li><Link to="/questions" className="hover:text-primary transition-colors">AI Coach</Link></li>
-                  </ul>
-               </div>
-               <div>
-                  <h4 className="font-bold text-ink mb-4">Resources</h4>
-                  <ul className="space-y-3 text-sm text-muted">
-                     <li><Link to="/questions" className="hover:text-primary transition-colors">Question Bank</Link></li>
-                     <li><Link to="/contact" className="hover:text-primary transition-colors">Help & Guides</Link></li>
-                     <li><Link to="/interview/setup" className="hover:text-primary transition-colors">Interview Setup</Link></li>
-                  </ul>
-               </div>
-               <div>
-                  <h4 className="font-bold text-ink mb-4">Company</h4>
-                  <ul className="space-y-3 text-sm text-muted">
-                     <li><Link to="/" className="hover:text-primary transition-colors">About IntervAI</Link></li>
-                     <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Support</Link></li>
-                     <li><button type="button" onClick={() => window.dispatchEvent(new CustomEvent("intervai_open_cookie_preferences"))} className="hover:text-primary transition-colors text-left">Cookie Settings</button></li>
-                  </ul>
-               </div>
+      {/* FOOTER (Clean Aced Style with Categories & Social Links) */}
+      <footer className="bg-[#f9fafb] border-t border-slate-200 text-slate-600 text-sm py-14">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-8 pb-12 border-b border-slate-200">
+            
+            {/* Col 1: Brand Info */}
+            <div className="col-span-2">
+              <Link to="/" className="flex items-center gap-2 mb-3 font-display font-extrabold text-xl text-slate-900">
+                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm font-black">
+                  I
+                </div>
+                IntervAI
+              </Link>
+              <p className="text-slate-500 text-sm max-w-sm leading-relaxed mb-4">
+                The modern AI interview coaching platform for software engineering, system design, and product leadership.
+              </p>
+              <div className="flex items-center gap-3 text-slate-400">
+                <span className="text-xs font-medium text-slate-500">Built for candidate success</span>
+              </div>
             </div>
-            <div className="border-t border-line pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted">
-               <span>© 2026 IntervAI. Practice with confidence.</span>
-               <div className="flex gap-6">
-                  <Link to="/privacy" className="hover:text-ink transition-colors">Privacy & Terms</Link>
-                  <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("intervai_open_cookie_preferences"))} className="hover:text-ink transition-colors">Privacy Preferences</button>
-               </div>
+
+            {/* Col 2: Products */}
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">Preparation</h3>
+              <ul className="space-y-2.5">
+                <li><Link to="/questions" className="hover:text-slate-900 transition-colors">Question Bank</Link></li>
+                <li><Link to="/interview/setup" className="hover:text-slate-900 transition-colors">AI Mock Loops</Link></li>
+                <li><Link to="/dashboard" className="hover:text-slate-900 transition-colors">Roadmaps</Link></li>
+                <li><Link to="/questions" className="hover:text-slate-900 transition-colors">System Design</Link></li>
+              </ul>
             </div>
-         </div>
+
+            {/* Col 3: Resources */}
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">Resources</h3>
+              <ul className="space-y-2.5">
+                <li><Link to="/contact" className="hover:text-slate-900 transition-colors">Help Center</Link></li>
+                <li><Link to="/contact" className="hover:text-slate-900 transition-colors">Feedback</Link></li>
+                <li><Link to="/privacy" className="hover:text-slate-900 transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/privacy" className="hover:text-slate-900 transition-colors">Terms of Service</Link></li>
+              </ul>
+            </div>
+
+            {/* Col 4: Platform */}
+            <div>
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4">Platform</h3>
+              <ul className="space-y-2.5">
+                <li><Link to="/login" className="hover:text-slate-900 transition-colors">Log In</Link></li>
+                <li><Link to="/register" className="hover:text-slate-900 transition-colors">Sign Up</Link></li>
+                <li><button type="button" onClick={() => window.dispatchEvent(new CustomEvent("intervai_open_cookie_preferences"))} className="hover:text-slate-900 transition-colors text-left">Cookie Preferences</button></li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <div>© 2026 IntervAI Inc. All rights reserved.</div>
+            <div className="flex gap-6">
+              <Link to="/privacy" className="hover:text-slate-800 transition-colors">Privacy</Link>
+              <Link to="/privacy" className="hover:text-slate-800 transition-colors">Security</Link>
+              <Link to="/contact" className="hover:text-slate-800 transition-colors">Contact Support</Link>
+            </div>
+          </div>
+        </div>
       </footer>
     </div>
   )

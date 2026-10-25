@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface AnswerRepository extends JpaRepository<Answer, String> {
     Optional<Answer> findByQuestionId(String questionId);
+    java.util.List<Answer> findByQuestionInterviewId(String interviewId);
 }

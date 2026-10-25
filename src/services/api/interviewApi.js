@@ -5,6 +5,7 @@ export const interviewApi = {
   getAll: () => apiClient.get("/interviews"),
   getById: (id) => apiClient.get(`/interviews/${id}`),
   getQuestions: (id) => apiClient.get(`/interviews/${id}/questions`),
+  getAnswers: (id) => apiClient.get(`/interviews/${id}/answers`),
   getAllQuestions: () => apiClient.get(`/interviews/questions`),
   getQuestion: (questionId) => apiClient.get(`/interviews/questions/${questionId}`),
   start: (id) => apiClient.post(`/interviews/${id}/start`),

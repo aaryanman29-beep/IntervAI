@@ -97,6 +97,11 @@ public class InterviewService {
         return questionRepository.findByInterviewIdOrderByQuestionOrderAsc(interviewId);
     }
 
+    public List<Answer> getInterviewAnswers(String interviewId, String userId) {
+        getInterview(interviewId, userId); // verify ownership
+        return answerRepository.findByQuestionInterviewId(interviewId);
+    }
+
     public List<Question> getUserQuestions(String userId) {
         return questionRepository.findByInterviewUserId(userId);
     }

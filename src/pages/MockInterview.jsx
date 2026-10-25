@@ -10,7 +10,7 @@ import {
   Volume2,
   XCircle,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useNavigate, useSearchParams } from "react-router"
 import Button from "../components/common/Button"
 import Card from "../components/common/Card"
@@ -48,6 +48,12 @@ export default function MockInterview() {
   const [recognition, setRecognition] = useState(null)
   const [speechSupported, setSpeechSupported] = useState(true)
 
+  const baseAnswerRef = useRef("")
+
+  useEffect(() => {
+    baseAnswerRef.current = answer
+  }, [answer])
+
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
     if (SpeechRecognition) {
@@ -57,14 +63,28 @@ export default function MockInterview() {
       recognizer.lang = "en-US"
 
       recognizer.onresult = (event) => {
-        let transcript = ""
+        let finalChunk = ""
+        let interimChunk = ""
+
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          transcript += event.results[i][0].transcript
+          const piece = event.results[i][0].transcript
+          if (event.results[i].isFinal) {
+            finalChunk += piece
+          } else {
+            interimChunk += piece
+          }
         }
-        setAnswer((prev) => {
-          const trimmed = prev.trim()
-          return trimmed ? `${trimmed} ${transcript}` : transcript
-        })
+
+        if (finalChunk) {
+          const currentBase = baseAnswerRef.current.trim()
+          const newBase = currentBase ? `${currentBase} ${finalChunk.trim()}` : finalChunk.trim()
+          baseAnswerRef.current = newBase
+          setAnswer(newBase)
+        } else if (interimChunk) {
+          const currentBase = baseAnswerRef.current.trim()
+          const fullText = currentBase ? `${currentBase} ${interimChunk.trim()}` : interimChunk.trim()
+          setAnswer(fullText)
+        }
       }
 
       recognizer.onerror = (e) => {
@@ -154,6 +174,11 @@ export default function MockInterview() {
   }
 
   const nextQuestion = () => {
+    if (isRecording && recognition) {
+      try { recognition.stop() } catch {}
+      setIsRecording(false)
+    }
+    baseAnswerRef.current = ""
     setAnswer("")
     setAiState("idle")
     setLastEvaluation(null)
