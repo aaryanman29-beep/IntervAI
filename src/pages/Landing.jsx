@@ -80,6 +80,29 @@ export default function Landing() {
 
   const [activeCategory, setActiveCategory] = useState("all")
 
+  // Dynamic Word Rotator (Rotating words in the Hero headline)
+  const rotatingWords = [
+    "tech interviews",
+    "system design",
+    "coding loops",
+    "behavioral rounds",
+    "staff-level cases",
+    "FAANG interviews",
+  ]
+  const [wordIndex, setWordIndex] = useState(0)
+  const [isAnimating, setIsAnimating] = useState(false)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsAnimating(true)
+      setTimeout(() => {
+        setWordIndex((prev) => (prev + 1) % rotatingWords.length)
+        setIsAnimating(false)
+      }, 400)
+    }, 2800)
+    return () => clearInterval(interval)
+  }, [rotatingWords.length])
+
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "SoftwareApplication",
@@ -185,17 +208,32 @@ export default function Landing() {
               <ChevronRight className="size-3 text-indigo-400" />
             </div>
 
-            {/* Main Title with Dynamic Animated Gradient */}
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.08] mb-6">
+            {/* Main Title with 3D Word Rotator & Animated Dynamic Gradient */}
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.12] mb-6">
               Everything you need to <br className="hidden sm:inline" />
-              <span className="bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-600 bg-clip-text text-transparent animate-gradient-text">
-                ace your tech interviews
+              <span className="inline-flex items-center flex-wrap justify-center gap-2">
+                <span className="text-slate-900">ace your</span>
+                <span className="relative inline-block min-w-[280px] sm:min-w-[420px] text-left">
+                  <span
+                    key={wordIndex}
+                    className={`inline-block bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-600 bg-clip-text text-transparent ${
+                      isAnimating ? "word-exit" : "word-enter"
+                    } animate-gradient-text`}
+                  >
+                    {rotatingWords[wordIndex]}
+                  </span>
+                  <span className="inline-block w-1 h-9 sm:h-12 -mb-1 sm:-mb-2 ml-1 bg-indigo-600 animate-cursor rounded-full align-middle" />
+                </span>
               </span>
             </h1>
 
-            {/* Subtitle */}
+            {/* Subtitle with highlighted sentence animation */}
             <p className="max-w-2xl mx-auto text-lg sm:text-xl text-slate-600 font-normal leading-relaxed mb-8">
-              Level up your career with AI-powered mock interviews, real interview questions from top tech companies, adaptive follow-ups, and personalized skill roadmaps.
+              Level up your career with{" "}
+              <span className="font-semibold text-slate-900 bg-indigo-50/80 px-2 py-0.5 rounded-md border border-indigo-100/60 transition-colors">
+                AI-powered mock interviews
+              </span>
+              , real questions from top tech companies, adaptive follow-ups, and personalized roadmaps.
             </p>
 
             {/* Action Buttons with Interactive Pulsing Glow */}
