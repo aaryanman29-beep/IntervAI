@@ -208,21 +208,21 @@ export default function Landing() {
               <ChevronRight className="size-3 text-indigo-400" />
             </div>
 
-            {/* Main Title with 3D Word Rotator & Animated Dynamic Gradient */}
-            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.12] mb-6">
+            {/* Main Title with Smooth Word Rotator */}
+            <h1 className="font-display text-4xl sm:text-6xl md:text-7xl font-extrabold text-slate-900 tracking-tight leading-[1.15] mb-6">
               Everything you need to <br className="hidden sm:inline" />
-              <span className="inline-flex items-center flex-wrap justify-center gap-2">
+              <span className="inline-flex items-center flex-wrap justify-center gap-2 sm:gap-3">
                 <span className="text-slate-900">ace your</span>
-                <span className="relative inline-block min-w-[280px] sm:min-w-[420px] text-left">
+                <span className="relative inline-flex items-center overflow-hidden h-[1.25em] align-middle px-1">
                   <span
                     key={wordIndex}
                     className={`inline-block bg-gradient-to-r from-indigo-600 via-purple-500 to-indigo-600 bg-clip-text text-transparent ${
                       isAnimating ? "word-exit" : "word-enter"
-                    } animate-gradient-text`}
+                    } animate-gradient-text font-black`}
                   >
                     {rotatingWords[wordIndex]}
                   </span>
-                  <span className="inline-block w-1 h-9 sm:h-12 -mb-1 sm:-mb-2 ml-1 bg-indigo-600 animate-cursor rounded-full align-middle" />
+                  <span className="inline-block w-1 h-7 sm:h-11 ml-1 bg-indigo-600 animate-cursor rounded-full" />
                 </span>
               </span>
             </h1>
@@ -283,12 +283,22 @@ export default function Landing() {
           </div>
           
           {/* Continuous Infinite Logo Marquee Strip */}
-          <div className="relative w-full overflow-hidden mask-fade-edges">
-            <div className="animate-marquee flex items-center gap-6">
-              {[...companies, ...companies].map((comp, idx) => (
+          <div className="relative w-full overflow-hidden mask-fade-edges py-2">
+            <div className="animate-marquee flex items-center gap-4 sm:gap-6">
+              {/* Set 1 */}
+              {companies.map((comp, idx) => (
                 <div
-                  key={`${comp.name}-${idx}`}
-                  className="flex items-center justify-center py-2 px-5 bg-white rounded-xl border border-slate-200/70 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-300 hover:shadow-xs transition-all duration-200 shrink-0"
+                  key={`track1-${comp.name}-${idx}`}
+                  className="flex items-center justify-center py-2.5 px-6 bg-white rounded-xl border border-slate-200/80 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 shrink-0 select-none cursor-pointer"
+                >
+                  {comp.name}
+                </div>
+              ))}
+              {/* Set 2 (Identical mirror for seamless infinite loop) */}
+              {companies.map((comp, idx) => (
+                <div
+                  key={`track2-${comp.name}-${idx}`}
+                  className="flex items-center justify-center py-2.5 px-6 bg-white rounded-xl border border-slate-200/80 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 shrink-0 select-none cursor-pointer"
                 >
                   {comp.name}
                 </div>
