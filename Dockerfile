@@ -13,7 +13,7 @@ RUN npm run build
 # Stage 2: Serve with lightweight NGINX
 FROM nginx:alpine-slim
 COPY --from=builder /app/dist /usr/share/nginx/html
-COPY public/_headers /etc/nginx/headers_custom.conf 2>/dev/null || true
+COPY public/_headers /etc/nginx/headers_custom.conf
 
 # SPA fallback configuration
 RUN echo 'server { \
