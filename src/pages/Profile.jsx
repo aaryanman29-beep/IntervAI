@@ -1,4 +1,4 @@
-import { Camera, Loader2, Pencil, Save, X } from "lucide-react"
+import { Camera, Loader2, Pencil, Save, X, AlertCircle, CheckCircle } from "lucide-react"
 import { useState, useEffect } from "react"
 import Badge from "../components/common/Badge"
 import Button from "../components/common/Button"
@@ -147,12 +147,16 @@ export default function Profile() {
           </div>
 
           {saveError && (
-            <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">{saveError}</p>
+            <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">
+              <AlertCircle className="size-4 shrink-0 text-rose-600" />
+              <span>{saveError}</span>
+            </div>
           )}
           {saveSuccess && (
-            <p className="mt-4 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-700">
-              Profile saved successfully.
-            </p>
+            <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50/80 p-3.5 text-xs font-medium text-emerald-800 shadow-xs animate-in fade-in">
+              <CheckCircle className="size-4 shrink-0 text-emerald-600" />
+              <span>Profile saved successfully.</span>
+            </div>
           )}
 
           {editing && (

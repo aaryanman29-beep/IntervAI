@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, Info, AlertCircle, ShieldCheck, Check } from "lucide-react"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import Button from "../components/common/Button"
@@ -99,24 +99,35 @@ export default function Register() {
                 placeholder="Repeat password"
               />
             </div>
-            <p className="text-xs text-muted">
-              Must be 8+ characters with uppercase, lowercase, number, and special character (@$!%*?&#^()_-+=).
-            </p>
+            {/* Modern Helper Callout for Password Requirements */}
+            <div className="flex items-start gap-2.5 rounded-xl border border-indigo-100 bg-indigo-50/60 p-3 text-xs leading-relaxed text-indigo-950">
+              <ShieldCheck className="size-4 shrink-0 text-indigo-600 mt-0.5" />
+              <div>
+                <span className="font-semibold text-indigo-900">Password requirements:</span>{" "}
+                At least 8 characters with uppercase, lowercase, number, and special character{" "}
+                <code className="rounded bg-white/90 px-1 py-0.5 font-mono text-[11px] text-indigo-700 border border-indigo-200/50">
+                  @$!%*?&#^()_-+=
+                </code>
+              </div>
+            </div>
+
             <label className="block text-sm font-semibold">
               Target Role
               <select
                 name="role"
-                className="mt-2 min-h-12 w-full rounded-xl border border-line bg-white px-4 font-normal outline-none focus:border-primary"
+                className="mt-2 min-h-12 w-full rounded-xl border border-line bg-white px-4 font-normal outline-none transition focus:border-primary focus:ring-3 focus:ring-primary/10"
               >
                 {roles.map((role) => (
                   <option key={role}>{role}</option>
                 ))}
               </select>
             </label>
+
             {error && (
-              <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-                {error}
-              </p>
+              <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">
+                <AlertCircle className="size-4 shrink-0 text-rose-600" />
+                <span>{error}</span>
+              </div>
             )}
             <Button type="submit" loading={loading} className="w-full">
               Create Account

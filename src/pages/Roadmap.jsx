@@ -1,4 +1,4 @@
-import { Map, LoaderCircle, RefreshCw } from "lucide-react"
+import { Map, LoaderCircle, RefreshCw, AlertCircle } from "lucide-react"
 import { useState } from "react"
 import Card from "../components/common/Card"
 import Button from "../components/common/Button"
@@ -86,7 +86,10 @@ export default function Roadmap() {
       ) : (
         <div className="space-y-4">
           {generateError && (
-            <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">{generateError}</p>
+            <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">
+              <AlertCircle className="size-4 shrink-0 text-rose-600" />
+              <span>{generateError}</span>
+            </div>
           )}
           {roadmapItems.map((item) => {
             let resources = []

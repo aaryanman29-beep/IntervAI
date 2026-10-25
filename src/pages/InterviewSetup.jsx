@@ -1,4 +1,4 @@
-import { ArrowRight, BrainCircuit, CheckCircle, History } from "lucide-react"
+import { ArrowRight, BrainCircuit, CheckCircle, History, AlertCircle } from "lucide-react"
 import { useState } from "react"
 import { useNavigate } from "react-router"
 import Badge from "../components/common/Badge"
@@ -164,9 +164,10 @@ export default function InterviewSetup() {
             </p>
           </div>
           {error && (
-            <p className="mt-4 rounded-xl bg-red-50 p-3 text-sm text-red-700">
-              {error}
-            </p>
+            <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">
+              <AlertCircle className="size-4 shrink-0 text-rose-600" />
+              <span>{error}</span>
+            </div>
           )}
           <Button
             onClick={start}

@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, AlertCircle } from "lucide-react"
 import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import Button from "../components/common/Button"
@@ -88,9 +88,10 @@ export default function Login() {
               </button>
             </div>
             {error && (
-              <p className="rounded-xl bg-red-50 p-3 text-sm text-red-700">
-                {error}
-              </p>
+              <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">
+                <AlertCircle className="size-4 shrink-0 text-rose-600" />
+                <span>{error}</span>
+              </div>
             )}
             <Button type="submit" loading={loading} className="w-full">
               Sign In
