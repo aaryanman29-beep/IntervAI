@@ -54,12 +54,27 @@ Whether preparing for **Software Engineering, System Design, Product Management,
   - Searchable by topic, difficulty (*Easy, Medium, Hard*), and track (*System Design, Algorithms, Behavioral, SQL, Machine Learning*).
   - Personal bookmarking and practice state management.
 
-- **🛡️ Production-Grade Security Hardening**
-  - Stateless JWT token authentication with bcrypt password encryption.
-  - In-memory sliding-window **Rate Limiting** to prevent brute-force attacks and prompt spamming.
-  - **Account Lockout Service**: Automatic temporary lock after consecutive failed login attempts.
-  - Prompt injection sanitization protecting generative AI models against prompt exploits.
-  - Production HTTP security headers: `CSP`, `HSTS`, `X-Frame-Options`, `X-Content-Type-Options`, and `Referrer-Policy`.
+- **✨ Premium Aced-Inspired UI & Micro-Animations**
+  - **Dynamic 3D Word Rotator**: Smooth perspective-flip animated headline cycling through practice disciplines.
+  - **Endless Horizontal Marquee**: Continuous GPU-accelerated social proof ticker with hover-to-pause and edge fade masks.
+  - **Ambient Pulsing Glow Orbs & Shimmer Badges**: Modern visual depth without performance compromise.
+  - **Live Audio Wave Equalizer**: Real-time microphone audio activity indicator in interview sessions.
+
+- **🛡️ 9-Pillar Production Security Architecture**
+  1. **Zero Client Secrets**: All API keys (`GEMINI_API_KEY`) and secrets (`JWT_SECRET`) reside exclusively server-side.
+  2. **Server-Side Business Logic**: Answer evaluations, scoring heuristics, and ATS parsing run in backend services.
+  3. **Strict Authentication & Authorization**: Stateless JWT verification with per-resource user ownership enforcement.
+  4. **Multi-Tier Rate Limiting & Abuse Protection**:
+     - *Login/Register*: Max 5 attempts/min per IP (mitigates credential stuffing/brute force).
+     - *Account Lockout*: Auto-lock after 5 consecutive failed login attempts.
+     - *Interview Loops*: Max 5 creations / 10 minutes.
+     - *AI Evaluations*: Max 1 evaluation per 3 seconds.
+     - *Resume Ingestion*: Max 5 uploads / 10 minutes.
+  5. **Input Validation & Sanitization**: Jakarta Bean Validation (`@Valid`, `@Pattern`) + PDF magic byte validation.
+  6. **Private Internal Database Network**: MySQL container isolated on an `internal: true` bridge network without public port exposure.
+  7. **Server-Authoritative Decisions**: Scores (0–100) and roadmap progressions calculated purely server-side.
+  8. **HTTPS/TLS & Hardened Headers**: HSTS, CSP, X-Frame-Options (`SAMEORIGIN`), X-Content-Type-Options (`nosniff`).
+  9. **Actuator & API Activity Protection**: Actuator health check isolated; sensitive endpoints locked behind `denyAll()`.
 
 ---
 
@@ -67,14 +82,16 @@ Whether preparing for **Software Engineering, System Design, Product Management,
 
 ```mermaid
 graph TD
-    Client["React 19 + Vite Frontend<br/>(Tailwind v4 / Recharts)"]
-    API["Spring Boot 4.1.1 REST API<br/>(Java 21 / Spring Security)"]
-    DB[("MySQL Database<br/>(Flyway Migrations)")]
+    Client["React 19 + Vite Frontend<br/>(Tailwind v4 / Recharts / 3D Rotator)"]
+    Proxy["Nginx Reverse Proxy<br/>(HTTPS / HSTS / TLS 1.3)"]
+    API["Spring Boot 4.1.1 REST API<br/>(Java 21 / Spring Security / Rate Limiter)"]
+    DB[("MySQL Database<br/>(Private Internal Network)")]
     AI["Google Gemini 1.5 Flash API<br/>(Generative Model)"]
     
-    Client -->|JWT Bearer / HTTPS| API
-    API -->|JPA / Hibernate| DB
-    API -->|Prompt Sanitized Calls| AI
+    Client -->|HTTPS / WSS| Proxy
+    Proxy -->|Internal Proxy| API
+    API -->|Isolated Bridge Network| DB
+    API -->|Server-to-Server HTTPS| AI
 ```
 
 ### Frontend
