@@ -6,8 +6,8 @@ services:
     environment:
       MYSQL_DATABASE: intervAI
       MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Root@7317}
-    ports:
-      - "3306:3306"
+    networks:
+      - internal-net
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -25,14 +25,15 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    networks:
+      - internal-net
+      - public-net
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
       SPRING_DATASOURCE_USERNAME: root
       SPRING_DATASOURCE_PASSWORD: ${DB_ROOT_PASSWORD:-Root@7317}
       JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-    ports:
-      - "8080:8080"
 
   frontend:
     build:
@@ -42,8 +43,15 @@ services:
     restart: always
     depends_on:
       - backend
+    networks:
+      - public-net
     ports:
       - "80:80"
+
+networks:
+  internal-net:
+    internal: true
+  public-net:
 
 volumes:
   db_data:

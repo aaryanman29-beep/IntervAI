@@ -19,11 +19,20 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final com.intervai.security.RateLimiterService rateLimiterService;
 
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(
             @Valid @RequestBody RegisterRequest request,
+            jakarta.servlet.http.HttpServletRequest httpRequest,
             jakarta.servlet.http.HttpServletResponse httpResponse) {
+
+        String clientIp = getClientIp(httpRequest);
+        if (!rateLimiterService.tryAcquire("register_ip:" + clientIp, 3, 600_000)) {
+            return ResponseEntity.status(429)
+                    .body(ApiResponse.error("Too many registration attempts from this IP. Please try again later.", "RATE_LIMIT_EXCEEDED"));
+        }
+
         AuthResponse response = authService.register(request);
         setAuthCookie(httpResponse, response.getToken());
         return ResponseEntity.ok(ApiResponse.success(response, "User registered successfully"));
@@ -32,7 +41,15 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(
             @Valid @RequestBody LoginRequest request,
+            jakarta.servlet.http.HttpServletRequest httpRequest,
             jakarta.servlet.http.HttpServletResponse httpResponse) {
+
+        String clientIp = getClientIp(httpRequest);
+        if (!rateLimiterService.tryAcquire("login_ip:" + clientIp, 5, 60_000)) {
+            return ResponseEntity.status(429)
+                    .body(ApiResponse.error("Too many login attempts. Please wait 1 minute before trying again.", "RATE_LIMIT_EXCEEDED"));
+        }
+
         AuthResponse response = authService.login(request);
         setAuthCookie(httpResponse, response.getToken());
         return ResponseEntity.ok(ApiResponse.success(response, "Login successful"));
@@ -73,5 +90,13 @@ public class AuthController {
                 .sameSite("Lax")
                 .build();
         response.addHeader(org.springframework.http.HttpHeaders.SET_COOKIE, cookie.toString());
+    }
+
+    private String getClientIp(jakarta.servlet.http.HttpServletRequest request) {
+        String xf = request.getHeader("X-Forwarded-For");
+        if (xf != null && !xf.isBlank()) {
+            return xf.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }
