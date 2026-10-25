@@ -3,9 +3,9 @@ spring:
     name: intervai
 
   datasource:
-    url: jdbc:mysql://localhost:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
-    username: root
-    password: Root@7317
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata}
+    username: ${SPRING_DATASOURCE_USERNAME:root}
+    password: ${SPRING_DATASOURCE_PASSWORD:Root@7317}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
