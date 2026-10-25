@@ -21,6 +21,7 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
     private final RoadmapService roadmapService;
+    private final com.intervai.security.RateLimiterService rateLimiterService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<DashboardResponse>> getDashboard(
@@ -40,6 +41,14 @@ public class DashboardController {
     public ResponseEntity<ApiResponse<List<LearningRoadmap>>> generateRoadmap(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @RequestBody Map<String, String> request) {
+
+        // Rate limit: max 3 roadmap generations per 5 minutes per user
+        String rateKey = "roadmap:" + userDetails.getId();
+        if (!rateLimiterService.tryAcquire(rateKey, 3, 300_000)) {
+            return ResponseEntity.status(429)
+                    .body(ApiResponse.error("Too many roadmap generations requested. Please try again in 5 minutes.", "RATE_LIMIT_EXCEEDED"));
+        }
+
         List<LearningRoadmap> roadmap = roadmapService.generateRoadmap(
                 userDetails.getId(), 
                 request.getOrDefault("targetRole", "Software Engineer"), 

@@ -3,30 +3,50 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import Button from "../components/common/Button"
 import { useAuth } from "../contexts/AuthContext"
+import { useToast } from "../contexts/ToastContext"
+import { usePageMeta } from "../hooks/usePageMeta"
+import { trackEvent, ConversionEvents } from "../utils/analytics"
 import { roles } from "../utils/constants"
 import { Field } from "./Login"
 
 export default function Register() {
   const navigate = useNavigate()
   const { register } = useAuth()
+  const toast = useToast()
   const [error, setError] = useState("")
   const [loading, setLoading] = useState(false)
+
+  usePageMeta({
+    title: "Create Account",
+    description: "Sign up for IntervAI to build confidence with realistic mock interviews and personalized feedback.",
+    canonicalPath: "/register",
+  })
 
   const submit = async (event) => {
     event.preventDefault()
     const form = Object.fromEntries(new FormData(event.currentTarget))
-    if (form.password.length < 8)
-      return setError("Password must be at least 8 characters.")
-    if (form.password !== form.confirmPassword)
-      return setError("Passwords do not match.")
+    const passwordRegex = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!._-]).{8,100}$/
+    if (!passwordRegex.test(form.password)) {
+      const msg = "Password must be at least 8 characters and include uppercase, lowercase, a digit, and a special character."
+      setError(msg)
+      return toast.warning(msg)
+    }
+    if (form.password !== form.confirmPassword) {
+      setError("Passwords do not match.")
+      return toast.warning("Passwords do not match.")
+    }
     
     setLoading(true)
     setError("")
     try {
       await register(form)
+      toast.success("Account created successfully! Welcome to IntervAI.")
+      trackEvent(ConversionEvents.USER_REGISTERED)
       navigate("/dashboard")
     } catch (err) {
-      setError(err.message || "Failed to register")
+      const msg = err.message || "Failed to register"
+      setError(msg)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -43,8 +63,12 @@ export default function Register() {
         </Link>
         <section className="rounded-3xl border border-line bg-white p-6 card-shadow md:p-9">
           <img
-            src={new URL("../assets/intervai-mark.png", import.meta.url).href}
-            alt=""
+            src={new URL("../assets/intervai-mark.webp", import.meta.url).href}
+            alt="IntervAI brand emblem"
+            width="48"
+            height="48"
+            loading="eager"
+            decoding="async"
             className="size-12 rounded-xl object-cover"
           />
           <h1 className="mt-5 font-display text-3xl font-extrabold">
@@ -75,6 +99,9 @@ export default function Register() {
                 placeholder="Repeat password"
               />
             </div>
+            <p className="text-xs text-muted">
+              Must be 8+ characters with uppercase, lowercase, number, and special character (@$!%*?&#^()_-+=).
+            </p>
             <label className="block text-sm font-semibold">
               Target Role
               <select

@@ -1,0 +1,21 @@
+User-agent: *
+Allow: /
+Allow: /questions
+Allow: /contact
+Allow: /login
+Allow: /register
+
+# Disallow authenticated application dashboards and private workflows
+Disallow: /dashboard
+Disallow: /interview/mock
+Disallow: /interview/result/
+Disallow: /interview/setup
+Disallow: /roadmap
+Disallow: /progress
+Disallow: /history
+Disallow: /bookmarks
+Disallow: /profile
+Disallow: /settings
+Disallow: /api/
+
+Sitemap: https://intervai.app/sitemap.xml

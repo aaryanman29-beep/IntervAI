@@ -40,6 +40,7 @@ export const apiClient = {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: "GET",
       headers: getHeaders(),
+      credentials: "include",
     });
     return handleResponse(response);
   },
@@ -49,6 +50,7 @@ export const apiClient = {
       method: "POST",
       headers: getHeaders(isFormData),
       body: isFormData ? body : JSON.stringify(body),
+      credentials: "include",
     });
     return handleResponse(response);
   },
@@ -58,6 +60,7 @@ export const apiClient = {
       method: "PUT",
       headers: getHeaders(),
       body: JSON.stringify(body),
+      credentials: "include",
     });
     return handleResponse(response);
   },
@@ -66,6 +69,7 @@ export const apiClient = {
     const response = await fetch(`${API_URL}${endpoint}`, {
       method: "DELETE",
       headers: getHeaders(),
+      credentials: "include",
     });
     return handleResponse(response);
   }

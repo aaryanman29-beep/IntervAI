@@ -9,6 +9,8 @@ import Details from "../components/questions/QuestionDetails"
 import StateViews from "../components/common/StateViews"
 import { interviewApi } from "../services/api/interviewApi"
 import { useAsync } from "../hooks/useAsync"
+import { usePageMeta } from "../hooks/usePageMeta"
+import Breadcrumbs from "../components/layout/Breadcrumbs"
 
 export default function QuestionDetails() {
   const { id } = useParams()
@@ -16,6 +18,12 @@ export default function QuestionDetails() {
   const { execute, status, value: fetchedQuestion, error } = useAsync(() => interviewApi.getQuestion(id))
   const [question, setQuestion] = useState(null)
   const [saved, setSaved] = useState(false)
+
+  usePageMeta({
+    title: question ? `Question #${id} · ${question.topic || "Practice"}` : `Question #${id}`,
+    description: "Detailed interview question breakdown, model answer structure, and evaluation guidelines.",
+    canonicalPath: `/questions/${id}`,
+  })
 
   useEffect(() => {
     execute()
@@ -44,6 +52,12 @@ export default function QuestionDetails() {
 
   return (
     <PageContainer>
+      <Breadcrumbs
+        items={[
+          { label: "Question Bank", href: "/questions" },
+          { label: question?.topic ? `${question.topic} (#${id})` : `Question #${id}` },
+        ]}
+      />
       <Button to="/questions" variant="ghost" icon={ArrowLeft} className="mb-4">
         Back to questions
       </Button>

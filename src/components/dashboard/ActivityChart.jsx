@@ -52,6 +52,7 @@ export default function ActivityChart({ title = "Performance trend", interviews 
                 stroke="var(--color-primary)"
                 strokeWidth={3}
                 dot={{ fill: "var(--color-primary)", r: 4 }}
+                isAnimationActive={typeof window !== "undefined" && !window.matchMedia("(prefers-reduced-motion: reduce)").matches}
               />
             </LineChart>
           </ResponsiveContainer>

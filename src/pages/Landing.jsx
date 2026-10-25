@@ -35,19 +35,52 @@ function useScrollReveal() {
   }, [])
 }
 
+import { usePageMeta } from "../hooks/usePageMeta"
+import StructuredData from "../components/common/StructuredData"
+
 export default function Landing() {
   useScrollReveal()
 
+  usePageMeta({
+    title: "AI Mock Interview Practice & Instant Coaching",
+    description: "Prepare smarter and interview better with AI-powered mock interviews, real-time answer evaluations, and personalized preparation roadmaps.",
+    canonicalPath: "/",
+  })
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "IntervAI",
+    "applicationCategory": "EducationalApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "description": "AI-powered interview preparation platform with simulated mock interviews, voice recording, and personalized scorecards.",
+    "publisher": {
+      "@type": "Organization",
+      "name": "IntervAI Inc.",
+      "url": "https://intervai.app"
+    }
+  }
+
   return (
-    <div className="min-h-screen bg-canvas font-sans selection:bg-primary-soft selection:text-primary overflow-x-hidden">
+    <div id="main-content" className="min-h-screen bg-canvas font-sans selection:bg-primary-soft selection:text-primary overflow-x-hidden">
+      <StructuredData data={structuredData} />
       
       {/* FLOATING NAVBAR */}
       <div className="fixed top-0 left-0 right-0 z-50 flex justify-center p-4">
         <nav className="glass-nav flex items-center justify-between rounded-full px-6 py-3 w-full max-w-6xl shadow-sm transition-all duration-300">
           <Link to="/" className="flex items-center gap-2.5 font-display text-lg font-extrabold" aria-label="IntervAI home">
             <img
-              src={new URL("../assets/intervai-mark.png", import.meta.url).href}
-              alt=""
+              src={new URL("../assets/intervai-mark.webp", import.meta.url).href}
+              alt="IntervAI brand emblem"
+              width="32"
+              height="32"
+              loading="eager"
+              decoding="async"
               className="size-8 rounded-lg object-cover"
             />
             <span className="hidden sm:inline">IntervAI</span>
@@ -422,7 +455,15 @@ export default function Landing() {
             <div className="grid grid-cols-2 md:grid-cols-5 gap-8 mb-16">
                <div className="col-span-2">
                   <Link to="/" className="flex items-center gap-2 font-display text-xl font-extrabold mb-4 text-ink">
-                     <img src={new URL("../assets/intervai-mark.png", import.meta.url).href} alt="" className="size-8 rounded-lg" />
+                     <img
+                       src={new URL("../assets/intervai-mark.webp", import.meta.url).href}
+                       alt="IntervAI brand emblem"
+                       width="32"
+                       height="32"
+                       loading="lazy"
+                       decoding="async"
+                       className="size-8 rounded-lg"
+                     />
                      IntervAI
                   </Link>
                   <p className="text-sm text-muted max-w-xs leading-relaxed">
@@ -440,25 +481,25 @@ export default function Landing() {
                <div>
                   <h4 className="font-bold text-ink mb-4">Resources</h4>
                   <ul className="space-y-3 text-sm text-muted">
-                     <li><a href="#" className="hover:text-primary transition-colors">Interview Tips</a></li>
-                     <li><a href="#" className="hover:text-primary transition-colors">Guides</a></li>
-                     <li><a href="#" className="hover:text-primary transition-colors">Blog</a></li>
+                     <li><Link to="/questions" className="hover:text-primary transition-colors">Question Bank</Link></li>
+                     <li><Link to="/contact" className="hover:text-primary transition-colors">Help & Guides</Link></li>
+                     <li><Link to="/interview/setup" className="hover:text-primary transition-colors">Interview Setup</Link></li>
                   </ul>
                </div>
                <div>
                   <h4 className="font-bold text-ink mb-4">Company</h4>
                   <ul className="space-y-3 text-sm text-muted">
-                     <li><a href="#" className="hover:text-primary transition-colors">About</a></li>
-                     <li><a href="#" className="hover:text-primary transition-colors">Contact</a></li>
-                     <li><a href="#" className="hover:text-primary transition-colors">GitHub</a></li>
+                     <li><Link to="/" className="hover:text-primary transition-colors">About IntervAI</Link></li>
+                     <li><Link to="/contact" className="hover:text-primary transition-colors">Contact Support</Link></li>
+                     <li><button type="button" onClick={() => window.dispatchEvent(new CustomEvent("intervai_open_cookie_preferences"))} className="hover:text-primary transition-colors text-left">Cookie Settings</button></li>
                   </ul>
                </div>
             </div>
             <div className="border-t border-line pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-muted">
                <span>© 2026 IntervAI. Practice with confidence.</span>
                <div className="flex gap-6">
-                  <a href="#" className="hover:text-ink transition-colors">Privacy Policy</a>
-                  <a href="#" className="hover:text-ink transition-colors">Terms of Service</a>
+                  <Link to="/privacy" className="hover:text-ink transition-colors">Privacy & Terms</Link>
+                  <button type="button" onClick={() => window.dispatchEvent(new CustomEvent("intervai_open_cookie_preferences"))} className="hover:text-ink transition-colors">Privacy Preferences</button>
                </div>
             </div>
          </div>

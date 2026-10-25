@@ -41,6 +41,12 @@ public class ResumeService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
+        // Enforce account quota: max 5 active resumes per user
+        List<Resume> userResumes = resumeRepository.findByUserId(userId);
+        if (userResumes.size() >= 5) {
+            throw new IllegalArgumentException("Account resume quota reached (maximum 5 resumes allowed). Please delete an older resume before uploading.");
+        }
+
         if (file.isEmpty() || file.getOriginalFilename() == null || !file.getOriginalFilename().toLowerCase().endsWith(".pdf")) {
             throw new IllegalArgumentException("Invalid file format. Only PDF is supported.");
         }
@@ -61,9 +67,9 @@ public class ResumeService {
         
         String extractedText;
         try (PDDocument document = Loader.loadPDF(fileBytes)) {
-            // Defense in depth: reject excessively large PDFs (> 25 pages)
-            if (document.getNumberOfPages() > 25) {
-                throw new IllegalArgumentException("PDF exceeds maximum allowed page limit of 25 pages.");
+            // Defense in depth against PDF bombs: reject excessively large PDFs (> 10 pages)
+            if (document.getNumberOfPages() > 10) {
+                throw new IllegalArgumentException("PDF exceeds maximum allowed page limit of 10 pages.");
             }
             PDFTextStripper stripper = new PDFTextStripper();
             stripper.setSortByPosition(true);

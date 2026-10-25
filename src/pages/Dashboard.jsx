@@ -20,8 +20,14 @@ import PageContainer from "../components/layout/PageContainer"
 import { useAsync } from "../hooks/useAsync"
 import { dashboardApi } from "../services/api/dashboardApi"
 import { interviewApi } from "../services/api/interviewApi"
+import { usePageMeta } from "../hooks/usePageMeta"
 
 export default function Dashboard() {
+  usePageMeta({
+    title: "User Dashboard",
+    description: "Overview of your interview readiness, recent activity, score trends, and AI recommendations.",
+    noIndex: true,
+  })
   const {
     data: dashData,
     loading: dashLoading,

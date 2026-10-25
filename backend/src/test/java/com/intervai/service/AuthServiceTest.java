@@ -30,6 +30,9 @@ class AuthServiceTest {
     @Mock
     private JwtUtil jwtUtil;
 
+    @Mock
+    private com.intervai.security.AccountLockoutService accountLockoutService;
+
     @InjectMocks
     private AuthService authService;
 

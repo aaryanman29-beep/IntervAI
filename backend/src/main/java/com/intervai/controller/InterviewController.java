@@ -22,11 +22,20 @@ import java.util.List;
 public class InterviewController {
 
     private final InterviewService interviewService;
+    private final com.intervai.security.RateLimiterService rateLimiterService;
 
     @PostMapping
     public ResponseEntity<ApiResponse<Interview>> createInterview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CreateInterviewRequest request) {
+
+        // Rate limit: max 5 interview creations per 10 minutes per user
+        String rateKey = "create_interview:" + userDetails.getId();
+        if (!rateLimiterService.tryAcquire(rateKey, 5, 600_000)) {
+            return ResponseEntity.status(429)
+                    .body(ApiResponse.error("Interview creation rate limit reached. Please wait before creating another session.", "RATE_LIMIT_EXCEEDED"));
+        }
+
         Interview interview = interviewService.createInterview(userDetails.getId(), request);
         return ResponseEntity.ok(ApiResponse.success(interview, "Interview created successfully"));
     }
@@ -82,6 +91,14 @@ public class InterviewController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable String id,
             @Valid @RequestBody SubmitAnswerRequest request) {
+
+        // Rate limit: max 1 answer evaluation every 3 seconds to prevent prompt spam
+        String rateKey = "answer:" + userDetails.getId();
+        if (!rateLimiterService.tryAcquire(rateKey, 1, 3_000)) {
+            return ResponseEntity.status(429)
+                    .body(ApiResponse.error("Evaluation in progress. Please wait a moment before submitting.", "RATE_LIMIT_EXCEEDED"));
+        }
+
         Answer answer = interviewService.submitAnswer(userDetails.getId(), id, request);
         return ResponseEntity.ok(ApiResponse.success(answer, "Answer evaluated successfully"));
     }

@@ -21,6 +21,16 @@ public class JwtUtil {
     @Value("${intervai.security.jwt.expiration-ms}")
     private int jwtExpirationMs;
 
+    @jakarta.annotation.PostConstruct
+    public void validateSecretConfiguration() {
+        if (jwtSecret == null || jwtSecret.trim().isEmpty() || jwtSecret.equals("${JWT_SECRET}")) {
+            throw new IllegalStateException("CRITICAL SECURITY ERROR: JWT_SECRET environment variable is missing or empty! Startup aborted.");
+        }
+        if (jwtSecret.equals("8a9b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f")) {
+            log.warn("SECURITY WARNING: JWT_SECRET is currently set to the development placeholder key. Ensure a high-entropy secret is configured in production.");
+        }
+    }
+
     public String generateJwtToken(Authentication authentication) {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
 

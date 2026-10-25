@@ -19,13 +19,17 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
         Map<String, String> errors = new HashMap<>();
-        ex.getBindingResult().getAllErrors().forEach((error) -> {
-            String fieldName = ((FieldError) error).getField();
+        String primaryMessage = "Validation failed";
+        for (org.springframework.validation.ObjectError error : ex.getBindingResult().getAllErrors()) {
+            String fieldName = (error instanceof FieldError) ? ((FieldError) error).getField() : error.getObjectName();
             String errorMessage = error.getDefaultMessage();
             errors.put(fieldName, errorMessage);
-        });
+            if (primaryMessage.equals("Validation failed") && errorMessage != null) {
+                primaryMessage = errorMessage;
+            }
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(ApiResponse.error(errors.toString(), "VALIDATION_FAILED"));
+                .body(new ApiResponse<>(false, primaryMessage, errors, "VALIDATION_FAILED"));
     }
 
     @ExceptionHandler(BadCredentialsException.class)

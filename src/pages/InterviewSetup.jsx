@@ -11,9 +11,21 @@ import { interviewApi } from "../services/api/interviewApi"
 import { resumeApi } from "../services/api/resumeApi"
 import { useAsync } from "../hooks/useAsync"
 import { BrainCircuit as BrainIcon, Clock3, Gauge, Layers3, Target } from "lucide-react"
+import { useToast } from "../contexts/ToastContext"
+import { usePageMeta } from "../hooks/usePageMeta"
+import Breadcrumbs from "../components/layout/Breadcrumbs"
+import { trackEvent, ConversionEvents } from "../utils/analytics"
 
 export default function InterviewSetup() {
   const navigate = useNavigate()
+  const toast = useToast()
+
+  usePageMeta({
+    title: "Configure Mock Interview",
+    description: "Customize your role, difficulty level, and resume attachment for an AI-tailored mock interview.",
+    noIndex: true,
+  })
+
   const [config, setConfig] = useState({
     targetRole: "Software Engineer",
     interviewType: "TECHNICAL",
@@ -34,9 +46,13 @@ export default function InterviewSetup() {
     try {
       const interview = await interviewApi.create(config)
       await interviewApi.start(interview.id)
+      toast.success("Interview session initialized! Good luck.")
+      trackEvent(ConversionEvents.INTERVIEW_STARTED, { role: config.targetRole, type: config.interviewType })
       navigate(`/interview/mock?interviewId=${interview.id}`)
     } catch (err) {
-      setError(err.message || "Failed to start interview")
+      const msg = err.message || "Failed to start interview"
+      setError(msg)
+      toast.error(msg)
       setStarting(false)
     }
   }
@@ -59,6 +75,7 @@ export default function InterviewSetup() {
       title="Choose Your Interview"
       description="Personalize your practice session to match your next opportunity."
     >
+      <Breadcrumbs items={[{ label: "Interview Setup" }]} />
       <div className="grid items-start gap-6 xl:grid-cols-[1.45fr_.55fr]">
         <Card className="space-y-8">
           <SetupSelector

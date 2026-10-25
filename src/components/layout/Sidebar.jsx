@@ -49,8 +49,12 @@ export default function Sidebar({ open, onClose }) {
             onClick={onClose}
           >
             <img
-              src={new URL("../../assets/intervai-mark.png", import.meta.url).href}
-              alt=""
+              src={new URL("../../assets/intervai-mark.webp", import.meta.url).href}
+              alt="IntervAI brand emblem"
+              width="40"
+              height="40"
+              loading="eager"
+              decoding="async"
               className="size-10 rounded-xl object-cover"
             />
             <span className="font-display text-xl font-extrabold tracking-tight">

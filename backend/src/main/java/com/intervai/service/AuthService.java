@@ -25,6 +25,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final com.intervai.security.AccountLockoutService accountLockoutService;
 
     public AuthResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -59,8 +60,22 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        String email = request.getEmail();
+        if (accountLockoutService.isLocked(email)) {
+            throw new IllegalArgumentException("Account is temporarily locked due to excessive failed login attempts. Please try again in 15 minutes.");
+        }
+
+        Authentication authentication;
+        try {
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+        } catch (Exception ex) {
+            accountLockoutService.recordFailedAttempt(email);
+            throw ex;
+        }
+
+        // Reset failed attempt counter on successful login
+        accountLockoutService.resetAttempts(email);
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtUtil.generateJwtToken(authentication);

@@ -35,11 +35,23 @@ function HydrationFallback() {
 
 import { ProtectedRoute } from "./components/layout/ProtectedRoute"
 import { AuthProvider } from "./contexts/AuthContext"
+import { ToastProvider } from "./contexts/ToastContext"
+import CookieConsent from "./components/common/CookieConsent"
 
 const router = createBrowserRouter([
   {
     path: "/",
     lazy: lazyPage(() => import("./pages/Landing")),
+    HydrateFallback: HydrationFallback,
+  },
+  {
+    path: "/contact",
+    lazy: lazyPage(() => import("./pages/Contact")),
+    HydrateFallback: HydrationFallback,
+  },
+  {
+    path: "/privacy",
+    lazy: lazyPage(() => import("./pages/PrivacyPolicy")),
     HydrateFallback: HydrationFallback,
   },
   {
@@ -126,7 +138,10 @@ const router = createBrowserRouter([
 export default function App() {
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      <ToastProvider>
+        <RouterProvider router={router} />
+        <CookieConsent />
+      </ToastProvider>
     </AuthProvider>
   )
 }

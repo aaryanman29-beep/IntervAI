@@ -3,12 +3,22 @@ import { useState } from "react"
 import { Link, useNavigate } from "react-router"
 import Button from "../components/common/Button"
 import { useAuth } from "../contexts/AuthContext"
+import { useToast } from "../contexts/ToastContext"
+import { usePageMeta } from "../hooks/usePageMeta"
+import { trackEvent, ConversionEvents } from "../utils/analytics"
 
 export default function Login() {
   const navigate = useNavigate()
   const { login } = useAuth()
+  const toast = useToast()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+
+  usePageMeta({
+    title: "Sign In",
+    description: "Sign in to your IntervAI account to access mock interviews, personalized question practice, and progress tracking.",
+    canonicalPath: "/login",
+  })
 
   const submit = async (event) => {
     event.preventDefault()
@@ -16,9 +26,13 @@ export default function Login() {
     setError("")
     try {
       await login(Object.fromEntries(new FormData(event.currentTarget)))
+      toast.success("Welcome back! Successfully signed in.")
+      trackEvent(ConversionEvents.USER_LOGGED_IN)
       navigate("/dashboard")
     } catch (err) {
-      setError(err.message || "Failed to login")
+      const msg = err.message || "Failed to login"
+      setError(msg)
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -36,8 +50,12 @@ export default function Login() {
           </Link>
           <div className="mb-8">
             <img
-              src={new URL("../assets/intervai-mark.png", import.meta.url).href}
-              alt=""
+              src={new URL("../assets/intervai-mark.webp", import.meta.url).href}
+              alt="IntervAI brand emblem"
+              width="48"
+              height="48"
+              loading="eager"
+              decoding="async"
               className="size-12 rounded-xl object-cover"
             />
             <h1 className="mt-6 font-display text-3xl font-extrabold">

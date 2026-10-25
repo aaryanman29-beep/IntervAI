@@ -9,8 +9,9 @@ import ScoreCard from "../components/feedback/ScoreCard"
 import SkillScore from "../components/feedback/SkillScore"
 import PageContainer from "../components/layout/PageContainer"
 import { interviewApi } from "../services/api/interviewApi"
-import { ErrorState } from "../components/feedback/StateViews"
 import { useAuth } from "../contexts/AuthContext"
+import { usePageMeta } from "../hooks/usePageMeta"
+import Breadcrumbs from "../components/layout/Breadcrumbs"
 
 export default function InterviewResult() {
   const { id } = useParams()
@@ -20,6 +21,12 @@ export default function InterviewResult() {
   const [questions, setQuestions] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+
+  usePageMeta({
+    title: "Interview Performance & Feedback Report",
+    description: "Detailed score breakdown, technical evaluation, and recommendations from your AI mock interview session.",
+    noIndex: true, // Authenticated private results must not be indexed
+  })
 
   const load = async () => {
     try {
@@ -82,6 +89,12 @@ export default function InterviewResult() {
 
   return (
     <PageContainer>
+      <Breadcrumbs
+        items={[
+          { label: "History", href: "/history" },
+          { label: `Interview Report #${id}` },
+        ]}
+      />
       <section className="mb-6 rounded-3xl bg-ink p-7 text-white md:flex md:items-center md:justify-between">
         <div>
           <span className="inline-flex items-center gap-2 text-sm font-bold text-primary-soft">

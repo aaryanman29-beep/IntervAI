@@ -6,8 +6,16 @@ import SearchBar from "../components/common/SearchBar"
 import StateViews from "../components/common/StateViews"
 import { interviewApi } from "../services/api/interviewApi"
 import { useAsync } from "../hooks/useAsync"
+import { usePageMeta } from "../hooks/usePageMeta"
+import Breadcrumbs from "../components/layout/Breadcrumbs"
 
 export default function Questions() {
+  usePageMeta({
+    title: "Interview Question Bank",
+    description: "Browse hundreds of curated technical, behavioral, and system design interview questions with model answers.",
+    canonicalPath: "/questions",
+  })
+
   const [search, setSearch] = useState("")
   const [filters, setFilters] = useState({})
   
@@ -66,6 +74,7 @@ export default function Questions() {
       title="Interview Question Bank"
       description="Explore past questions, save favorites, and practice at your own pace."
     >
+      <Breadcrumbs items={[{ label: "Question Bank" }]} />
       <div className="space-y-4 rounded-2xl border border-line bg-white p-5 card-shadow">
         <SearchBar
           value={search}
