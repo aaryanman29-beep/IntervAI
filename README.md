@@ -13,9 +13,9 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 **Everything you need to ace your technical, system design, and behavioral interviews.**  
-*Live speech-to-text recording, adaptive AI follow-ups, ATS resume matching, and instant multi-dimensional scorecards.*
+_Live speech-to-text recording, adaptive AI follow-ups, ATS resume matching, and instant multi-dimensional scorecards._
 
-[Live Demo](https://intervai.app) · [Report Bug](https://github.com/aaryanman29-beep/IntervAI/issues) · [Request Feature](https://github.com/aaryanman29-beep/IntervAI/issues)
+[Report Bug](https://github.com/aaryanman29-beep/IntervAI/issues) · [Request Feature](https://github.com/aaryanman29-beep/IntervAI/issues)
 
 </div>
 
@@ -51,7 +51,7 @@ Whether preparing for **Software Engineering, System Design, Product Management,
   - Visual metrics, radar charts, strengths/weaknesses breakdown, and model reference answers.
 
 - **🎯 Curated Question Bank**
-  - Searchable by topic, difficulty (*Easy, Medium, Hard*), and track (*System Design, Algorithms, Behavioral, SQL, Machine Learning*).
+  - Searchable by topic, difficulty (_Easy, Medium, Hard_), and track (_System Design, Algorithms, Behavioral, SQL, Machine Learning_).
   - Personal bookmarking and practice state management.
 
 - **✨ Premium Aced-Inspired UI & Micro-Animations**
@@ -65,11 +65,11 @@ Whether preparing for **Software Engineering, System Design, Product Management,
   2. **Server-Side Business Logic**: Answer evaluations, scoring heuristics, and ATS parsing run in backend services.
   3. **Strict Authentication & Authorization**: Stateless JWT verification with per-resource user ownership enforcement.
   4. **Multi-Tier Rate Limiting & Abuse Protection**:
-     - *Login/Register*: Max 5 attempts/min per IP (mitigates credential stuffing/brute force).
-     - *Account Lockout*: Auto-lock after 5 consecutive failed login attempts.
-     - *Interview Loops*: Max 5 creations / 10 minutes.
-     - *AI Evaluations*: Max 1 evaluation per 3 seconds.
-     - *Resume Ingestion*: Max 5 uploads / 10 minutes.
+     - _Login/Register_: Max 5 attempts/min per IP (mitigates credential stuffing/brute force).
+     - _Account Lockout_: Auto-lock after 5 consecutive failed login attempts.
+     - _Interview Loops_: Max 5 creations / 10 minutes.
+     - _AI Evaluations_: Max 1 evaluation per 3 seconds.
+     - _Resume Ingestion_: Max 5 uploads / 10 minutes.
   5. **Input Validation & Sanitization**: Jakarta Bean Validation (`@Valid`, `@Pattern`) + PDF magic byte validation.
   6. **Private Internal Database Network**: MySQL container isolated on an `internal: true` bridge network without public port exposure.
   7. **Server-Authoritative Decisions**: Scores (0–100) and roadmap progressions calculated purely server-side.
@@ -87,7 +87,7 @@ graph TD
     API["Spring Boot 4.1.1 REST API<br/>(Java 21 / Spring Security / Rate Limiter)"]
     DB[("MySQL Database<br/>(Private Internal Network)")]
     AI["Google Gemini 1.5 Flash API<br/>(Generative Model)"]
-    
+
     Client -->|HTTPS / WSS| Proxy
     Proxy -->|Internal Proxy| API
     API -->|Isolated Bridge Network| DB
@@ -95,6 +95,7 @@ graph TD
 ```
 
 ### Frontend
+
 - **Framework**: React 19 + Vite 8
 - **Styling**: Tailwind CSS v4 with custom Aced.io-inspired design system tokens
 - **Typography**: Inter (Body) + Plus Jakarta Sans (Headings) + JetBrains Mono (Code)
@@ -103,6 +104,7 @@ graph TD
 - **Testing**: Vitest + React Testing Library + JSDOM
 
 ### Backend
+
 - **Framework**: Spring Boot 4.1.1 (Java 21)
 - **Security**: Spring Security 7 + JWT + BCrypt + Custom Rate Limiter
 - **Database**: MySQL with Flyway Database Versioning
@@ -115,6 +117,7 @@ graph TD
 ## 🚀 Quick Start Guide
 
 ### Prerequisites
+
 - **Node.js**: `v20.x` or `v22.x` (pnpm or npm)
 - **Java**: OpenJDK `21`
 - **MySQL**: `8.x`, `9.x`, or `26.x`
@@ -123,6 +126,7 @@ graph TD
 ---
 
 ### 1. Clone Repository
+
 ```bash
 git clone https://github.com/aaryanman29-beep/IntervAI.git
 cd IntervAI
@@ -131,7 +135,9 @@ cd IntervAI
 ---
 
 ### 2. Configure Backend
+
 Create an environment file or export variables:
+
 ```bash
 # In backend/src/main/resources/application.yml or system environment
 export SPRING_DATASOURCE_URL="jdbc:mysql://localhost:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata"
@@ -142,43 +148,53 @@ export GEMINI_API_KEY="your-gemini-api-key"
 ```
 
 Start the backend:
+
 ```bash
 cd backend
 ./mvnw clean spring-boot:run
 ```
-*Backend runs on `http://localhost:8080`.*
+
+_Backend runs on `http://localhost:8080`._
 
 ---
 
 ### 3. Configure Frontend
+
 In the root directory, create `.env.local`:
+
 ```bash
 VITE_API_URL=http://localhost:8080/api
 ```
 
 Install dependencies and start development server:
+
 ```bash
 npm install
 npm run dev
 ```
-*Frontend runs on `http://localhost:8443` (or `http://localhost:5173`).*
+
+_Frontend runs on `http://localhost:8443` (or `http://localhost:5173`)._
 
 ---
 
 ## 🧪 Testing
 
 ### Frontend Tests
+
 ```bash
 npm run test
 ```
-*Executes unit and integration test suites using Vitest.*
+
+_Executes unit and integration test suites using Vitest._
 
 ### Backend Tests
+
 ```bash
 cd backend
 ./mvnw test
 ```
-*Runs all 16 JUnit 5 / SpringBoot unit and integration tests.*
+
+_Runs all 16 JUnit 5 / SpringBoot unit and integration tests._
 
 ---
 
@@ -191,6 +207,7 @@ docker compose up -d --build
 ```
 
 This spins up:
+
 - **`intervai-frontend`**: Production NGINX web server serving optimized Vite bundle on port `80`/`443`.
 - **`intervai-backend`**: Spring Boot container on port `8080`.
 - **`intervai-db`**: MySQL container with persistent volume and health check.
@@ -199,11 +216,11 @@ This spins up:
 
 ## 🌐 Production Deployment Options
 
-| Service | Recommended Platform | Notes |
-| :--- | :--- | :--- |
+| Service      | Recommended Platform                            | Notes                                              |
+| :----------- | :---------------------------------------------- | :------------------------------------------------- |
 | **Frontend** | Vercel / Cloudflare Pages / AWS S3 + CloudFront | Set build command: `npm run build`, output: `dist` |
-| **Backend** | AWS ECS / Google Cloud Run / Render / Railway | Containerized Spring Boot JAR |
-| **Database** | AWS RDS / PlanetScale / Supabase MySQL | Automated backups and SSL connections |
+| **Backend**  | AWS ECS / Google Cloud Run / Render / Railway   | Containerized Spring Boot JAR                      |
+| **Database** | AWS RDS / PlanetScale / Supabase MySQL          | Automated backups and SSL connections              |
 
 ---
 
@@ -220,6 +237,7 @@ This spins up:
 ## 🤝 Contributing
 
 Contributions are always welcome!
+
 1. Fork the Project.
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`).
 3. Commit your Changes (`git commit -m 'feat: add AmazingFeature'`).
