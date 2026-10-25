@@ -57,10 +57,10 @@ export default function CookieConsent() {
       role="dialog"
       aria-labelledby="cookie-banner-title"
       aria-describedby="cookie-banner-desc"
-      className="fixed bottom-4 left-4 right-4 md:left-auto md:right-4 md:max-w-md z-50 rounded-3xl border border-line bg-white/95 backdrop-blur-md p-6 card-shadow text-ink page-enter"
+      className="fixed bottom-5 left-5 right-5 sm:left-auto sm:right-6 sm:max-w-md z-[9999] rounded-2xl border border-slate-300 bg-white p-6 shadow-2xl text-ink transition-all duration-300 animate-in fade-in slide-in-from-bottom-5"
     >
       <div className="flex items-start gap-3">
-        <div className="grid size-10 shrink-0 place-items-center rounded-2xl bg-primary-soft text-primary">
+        <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-indigo-50 text-indigo-600">
           <Cookie className="size-5" />
         </div>
         <div className="flex-1 min-w-0">

@@ -22,5 +22,5 @@ export function useAsync(asyncFn, deps = []) {
     execute();
   }, [execute]);
 
-  return { ...state, refetch: execute };
+  return { ...state, refetch: execute, execute, value: state.data, status: state.loading ? "loading" : state.error ? "error" : "success" };
 }

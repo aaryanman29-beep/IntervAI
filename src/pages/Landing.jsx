@@ -30,6 +30,7 @@ import Badge from "../components/common/Badge"
 import { roles } from "../utils/constants"
 import { usePageMeta } from "../hooks/usePageMeta"
 import StructuredData from "../components/common/StructuredData"
+import intervaiLogo from "../assets/intervai-mark.webp"
 
 function useScrollReveal() {
   useEffect(() => {
@@ -108,10 +109,15 @@ export default function Landing() {
           
           {/* Logo & Brand */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2.5" aria-label="IntervAI home">
-              <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-sm shadow-indigo-500/20">
-                I
-              </div>
+            <Link to="/" className="flex items-center gap-2.5 group" aria-label="IntervAI home">
+              <img
+                src={intervaiLogo}
+                alt="IntervAI Logo"
+                width="36"
+                height="36"
+                className="w-9 h-9 rounded-xl object-contain drop-shadow-sm group-hover:scale-105 transition-transform"
+                loading="eager"
+              />
               <span className="font-display font-extrabold text-xl tracking-tight text-slate-900">
                 Interv<span className="text-indigo-600">AI</span>
               </span>
@@ -516,11 +522,16 @@ export default function Landing() {
             
             {/* Col 1: Brand Info */}
             <div className="col-span-2">
-              <Link to="/" className="flex items-center gap-2 mb-3 font-display font-extrabold text-xl text-slate-900">
-                <div className="w-7 h-7 rounded-lg bg-indigo-600 flex items-center justify-center text-white text-sm font-black">
-                  I
-                </div>
-                IntervAI
+              <Link to="/" className="flex items-center gap-2.5 mb-3 font-display font-extrabold text-xl text-slate-900 group">
+                <img
+                  src={intervaiLogo}
+                  alt="IntervAI Logo"
+                  width="32"
+                  height="32"
+                  className="w-8 h-8 rounded-lg object-contain drop-shadow-sm group-hover:scale-105 transition-transform"
+                  loading="lazy"
+                />
+                Interv<span className="text-indigo-600">AI</span>
               </Link>
               <p className="text-slate-500 text-sm max-w-sm leading-relaxed mb-4">
                 The modern AI interview coaching platform for software engineering, system design, and product leadership.
