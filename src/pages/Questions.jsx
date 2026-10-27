@@ -27,9 +27,15 @@ export default function Questions() {
   }, [execute])
 
   useEffect(() => {
-    if (fetchedQuestions?.data) {
+    const rawList = Array.isArray(fetchedQuestions)
+      ? fetchedQuestions
+      : Array.isArray(fetchedQuestions?.data)
+      ? fetchedQuestions.data
+      : null
+
+    if (rawList) {
       const savedBookmarks = JSON.parse(localStorage.getItem('intervai_bookmarks') || '[]')
-      const formatted = fetchedQuestions.data.map(q => ({
+      const formatted = rawList.map(q => ({
         id: q.id,
         question: q.questionText,
         category: q.questionType,

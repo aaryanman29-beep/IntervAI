@@ -30,8 +30,8 @@ export default function QuestionDetails() {
   }, [execute])
 
   useEffect(() => {
-    if (fetchedQuestion?.data) {
-      const q = fetchedQuestion.data
+    const q = fetchedQuestion?.questionText ? fetchedQuestion : fetchedQuestion?.data
+    if (q) {
       setQuestion({
         id: q.id,
         question: q.questionText,

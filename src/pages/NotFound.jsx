@@ -32,11 +32,11 @@ export default function NotFound() {
         </p>
 
         <h1 id="not-found-heading" className="mt-3 font-display text-2xl md:text-3xl font-extrabold text-ink">
-          This question isn't on the syllabus
+          {"This question isn't on the syllabus"}
         </h1>
 
         <p className="mx-auto mt-3 max-w-sm text-sm text-muted leading-relaxed">
-          The page you’re looking for doesn’t exist or might have been relocated. Jump back into your interview preparation using the links below.
+          {"The page you're looking for doesn't exist or might have been relocated. Jump back into your interview preparation using the links below."}
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">

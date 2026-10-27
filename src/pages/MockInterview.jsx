@@ -49,10 +49,17 @@ export default function MockInterview() {
   const [speechSupported, setSpeechSupported] = useState(true)
 
   const baseAnswerRef = useRef("")
+  const currentIdxRef = useRef(0)
+  const isRecordingRef = useRef(false)
+  const recognitionRef = useRef(null)
 
   useEffect(() => {
     baseAnswerRef.current = answer
   }, [answer])
+
+  useEffect(() => {
+    currentIdxRef.current = currentIdx
+  }, [currentIdx])
 
   useEffect(() => {
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
@@ -63,6 +70,12 @@ export default function MockInterview() {
       recognizer.lang = "en-US"
 
       recognizer.onresult = (event) => {
+        // Guard against callbacks firing after question navigation
+        const sessionQuestionIdx = recognizer._targetQuestionIdx
+        if (sessionQuestionIdx !== undefined && sessionQuestionIdx !== currentIdxRef.current) {
+          return
+        }
+
         let finalChunk = ""
         let interimChunk = ""
 
@@ -89,27 +102,47 @@ export default function MockInterview() {
 
       recognizer.onerror = (e) => {
         console.warn("Speech recognition error:", e.error)
+        isRecordingRef.current = false
         setIsRecording(false)
       }
 
       recognizer.onend = () => {
+        isRecordingRef.current = false
         setIsRecording(false)
       }
 
+      recognitionRef.current = recognizer
       setRecognition(recognizer)
+
+      return () => {
+        try {
+          recognizer.abort()
+        } catch {}
+      }
     } else {
       setSpeechSupported(false)
     }
   }, [])
 
-  const toggleRecording = () => {
-    if (!recognition) return
-    if (isRecording) {
-      recognition.stop()
+  const stopActiveRecording = () => {
+    if (recognitionRef.current && isRecordingRef.current) {
+      try {
+        recognitionRef.current.stop()
+      } catch {}
+      isRecordingRef.current = false
       setIsRecording(false)
+    }
+  }
+
+  const toggleRecording = () => {
+    if (!recognitionRef.current) return
+    if (isRecording) {
+      stopActiveRecording()
     } else {
       try {
-        recognition.start()
+        recognitionRef.current._targetQuestionIdx = currentIdxRef.current
+        recognitionRef.current.start()
+        isRecordingRef.current = true
         setIsRecording(true)
       } catch (err) {
         console.warn("Recognition start failed:", err)
@@ -174,15 +207,16 @@ export default function MockInterview() {
   }
 
   const nextQuestion = () => {
-    if (isRecording && recognition) {
-      try { recognition.stop() } catch {}
-      setIsRecording(false)
-    }
+    stopActiveRecording()
     baseAnswerRef.current = ""
     setAnswer("")
     setAiState("idle")
     setLastEvaluation(null)
-    setCurrentIdx(prev => Math.min(prev + 1, questions.length - 1))
+    setCurrentIdx(prev => {
+      const next = Math.min(prev + 1, questions.length - 1)
+      currentIdxRef.current = next
+      return next
+    })
   }
 
   const completeInterview = async () => {
@@ -344,10 +378,16 @@ export default function MockInterview() {
               variant="ghost"
               disabled={currentIdx === 0}
               onClick={() => {
-                setCurrentIdx(prev => prev - 1)
+                stopActiveRecording()
+                baseAnswerRef.current = ""
                 setAnswer("")
                 setAiState("idle")
                 setLastEvaluation(null)
+                setCurrentIdx(prev => {
+                  const prevIdx = Math.max(0, prev - 1)
+                  currentIdxRef.current = prevIdx
+                  return prevIdx
+                })
               }}
             >
               Previous

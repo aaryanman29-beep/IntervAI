@@ -19,7 +19,11 @@ public class GeminiService {
     @Value("${intervai.gemini.api-key}")
     private String apiKey;
 
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    @Value("${intervai.gemini.model:gemini-1.5-flash}")
+    private String model;
+
+    @Value("${intervai.gemini.api-url:https://generativelanguage.googleapis.com/v1beta/models}")
+    private String apiBaseUrl;
 
     private final RestTemplate restTemplate;
 
@@ -28,7 +32,7 @@ public class GeminiService {
             throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
         }
 
-        String url = GEMINI_API_URL + "?key=" + apiKey;
+        String url = String.format("%s/%s:generateContent?key=%s", apiBaseUrl, model, apiKey);
 
         Map<String, Object> requestBody = new HashMap<>();
         

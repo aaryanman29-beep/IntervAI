@@ -18,9 +18,15 @@ export default function Bookmarks() {
   }, [execute])
 
   useEffect(() => {
-    if (fetchedQuestions?.data) {
+    const rawList = Array.isArray(fetchedQuestions)
+      ? fetchedQuestions
+      : Array.isArray(fetchedQuestions?.data)
+      ? fetchedQuestions.data
+      : null
+
+    if (rawList) {
       const savedBookmarks = JSON.parse(localStorage.getItem('intervai_bookmarks') || '[]')
-      const formatted = fetchedQuestions.data
+      const formatted = rawList
         .filter(q => savedBookmarks.includes(q.id))
         .map(q => ({
           id: q.id,

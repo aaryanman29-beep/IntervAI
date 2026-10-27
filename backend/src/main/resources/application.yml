@@ -39,6 +39,8 @@ intervai:
 
   gemini:
     api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-1.5-flash}
+    api-url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta/models}
 
   storage:
     type: ${STORAGE_TYPE:local}

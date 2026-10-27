@@ -5,6 +5,7 @@ import Button from "../components/common/Button";
 import { usePageMeta } from "../hooks/usePageMeta";
 import { useToast } from "../contexts/ToastContext";
 import { trackEvent, ConversionEvents } from "../utils/analytics";
+import { apiClient } from "../services/api/client";
 
 export default function Contact() {
   usePageMeta({
@@ -42,16 +43,7 @@ export default function Contact() {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/api/contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error("Unable to submit your inquiry at this moment.");
-      }
-
+      await apiClient.post("/contact", formData);
       setSubmitted(true);
       toast.success("Thank you! Your message has been sent successfully.");
       trackEvent(ConversionEvents.CONTACT_SUBMITTED, { subject: formData.subject });
