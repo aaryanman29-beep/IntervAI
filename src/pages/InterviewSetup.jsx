@@ -15,6 +15,7 @@ import { useToast } from "../contexts/ToastContext"
 import { usePageMeta } from "../hooks/usePageMeta"
 import Breadcrumbs from "../components/layout/Breadcrumbs"
 import { trackEvent, ConversionEvents } from "../utils/analytics"
+import CompanyLogo from "../components/common/CompanyLogo"
 
 export default function InterviewSetup() {
   const navigate = useNavigate()
@@ -35,12 +36,20 @@ export default function InterviewSetup() {
   })
   const [starting, setStarting] = useState(false)
   const [error, setError] = useState("")
+  const [consent, setConsent] = useState(true)
 
   const { data: resumes, loading: resumesLoading } = useAsync(() => resumeApi.getAll())
 
   const set = (key) => (value) => setConfig({ ...config, [key]: value })
 
   const start = async () => {
+    if (!consent) {
+      const msg = "Please accept the session and AI evaluation data consent to start your interview."
+      setError(msg)
+      toast.warning(msg)
+      return
+    }
+
     setStarting(true)
     setError("")
     try {
@@ -100,7 +109,7 @@ export default function InterviewSetup() {
             displayFn={(v) => levelDisplayMap[v] || v}
           />
           <div>
-            <p className="mb-3 text-sm font-semibold text-ink">
+            <p className="mb-2 text-sm font-semibold text-ink">
               4. Company name (optional)
             </p>
             <input
@@ -110,6 +119,25 @@ export default function InterviewSetup() {
               onChange={(e) => setConfig({ ...config, company: e.target.value })}
               className="w-full rounded-xl border border-line px-4 py-3 text-sm outline-none transition focus:border-primary focus:ring-3 focus:ring-primary/10"
             />
+            {/* Quick-Pick Target Company with Logos */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+              <span className="text-[11px] font-semibold text-muted mr-1">Popular:</span>
+              {["Google", "Meta", "Amazon", "Microsoft", "Apple", "OpenAI", "Netflix", "Stripe"].map((cName) => (
+                <button
+                  key={cName}
+                  type="button"
+                  onClick={() => setConfig({ ...config, company: config.company === cName ? "" : cName })}
+                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border transition select-none ${
+                    config.company.toLowerCase() === cName.toLowerCase()
+                      ? "bg-primary-soft text-primary border-primary/40 shadow-xs"
+                      : "bg-slate-50 text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-white"
+                  }`}
+                >
+                  <CompanyLogo name={cName} className="size-3.5" />
+                  <span>{cName}</span>
+                </button>
+              ))}
+            </div>
           </div>
           <div>
             <p className="mb-3 text-sm font-semibold text-ink">
@@ -163,6 +191,23 @@ export default function InterviewSetup() {
               Questions adapt to your selected role and experience level using Gemini AI.
             </p>
           </div>
+          {/* Session Data Processing Consent */}
+          <div className="mt-5 flex items-start gap-2.5 rounded-xl border border-slate-200/90 bg-slate-50/70 p-3 text-xs text-slate-700">
+            <input
+              type="checkbox"
+              id="interview-consent-check"
+              checked={consent}
+              onChange={(e) => {
+                setConsent(e.target.checked)
+                if (e.target.checked) setError("")
+              }}
+              className="mt-0.5 size-4 shrink-0 rounded border-line accent-primary cursor-pointer"
+            />
+            <label htmlFor="interview-consent-check" className="cursor-pointer select-none leading-relaxed">
+              <span className="font-semibold text-slate-900">Session Data Consent:</span> I consent to IntervAI recording my interview answers and evaluating them with AI to generate scoring analytics and follow-up prompts. <span className="text-red-500">*</span>
+            </label>
+          </div>
+
           {error && (
             <div className="mt-4 flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">
               <AlertCircle className="size-4 shrink-0 text-rose-600" />
@@ -174,7 +219,7 @@ export default function InterviewSetup() {
             loading={starting}
             disabled={starting}
             icon={ArrowRight}
-            className="mt-6 w-full"
+            className="mt-5 w-full"
           >
             {starting ? "Generating questions..." : "Start Interview"}
           </Button>

@@ -79,13 +79,30 @@ export default function Login() {
               placeholder="Enter your password"
             />
             <div className="flex items-center justify-between text-sm">
-              <label className="flex items-center gap-2 text-muted">
+              <label className="flex items-center gap-2 text-muted cursor-pointer">
                 <input type="checkbox" className="size-4 accent-primary" />
                 Remember me
               </label>
-              <button type="button" className="font-semibold text-primary">
+              <button type="button" className="font-semibold text-primary hover:underline">
                 Forgot password?
               </button>
+            </div>
+
+            <div className="flex items-start gap-2.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-3 text-xs text-muted">
+              <input
+                type="checkbox"
+                id="login-consent"
+                name="consent"
+                required
+                className="mt-0.5 size-4 shrink-0 rounded border-line accent-primary cursor-pointer"
+              />
+              <label htmlFor="login-consent" className="cursor-pointer select-none leading-relaxed">
+                I agree to the{" "}
+                <Link to="/privacy" target="_blank" className="font-semibold text-primary underline hover:text-primary-hover">
+                  Terms & Privacy Policy
+                </Link>
+                , and consent to account session data processing. <span className="text-red-500">*</span>
+              </label>
             </div>
             {error && (
               <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">

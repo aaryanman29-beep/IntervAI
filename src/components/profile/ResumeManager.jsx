@@ -12,10 +12,16 @@ export default function ResumeManager() {
   const [analyzingId, setAnalyzingId] = useState(null)
   const [activeAnalysis, setActiveAnalysis] = useState(null)
   const [uploadError, setUploadError] = useState("")
+  const [resumeConsent, setResumeConsent] = useState(true)
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0]
     if (!file) return
+
+    if (!resumeConsent) {
+      setUploadError("You must consent to AI resume data processing before uploading your file.")
+      return
+    }
 
     setUploading(true)
     setUploadError("")
@@ -43,25 +49,42 @@ export default function ResumeManager() {
 
   return (
     <Card className="mt-6">
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h2 className="font-display text-lg font-bold">Resume Management</h2>
           <p className="mt-1 text-sm text-muted">
             Upload your resumes to enable AI-powered skill extraction and tailored interviews.
           </p>
         </div>
-        <label className="cursor-pointer">
+        <label className={`cursor-pointer ${!resumeConsent ? "opacity-60 cursor-not-allowed" : ""}`}>
           <input
             type="file"
             accept=".pdf,.doc,.docx"
             className="hidden"
             onChange={handleUpload}
-            disabled={uploading}
+            disabled={uploading || !resumeConsent}
           />
           <div className={`inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-white transition hover:bg-primary-hover ${uploading ? "opacity-70" : ""}`}>
             {uploading ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
             {uploading ? "Uploading..." : "Upload Resume"}
           </div>
+        </label>
+      </div>
+
+      {/* Consumer Data Consent Checkbox */}
+      <div className="mb-5 flex items-start gap-2.5 rounded-xl border border-slate-200/90 bg-slate-50/70 p-3.5 text-xs text-slate-700">
+        <input
+          type="checkbox"
+          id="resume-consent-check"
+          checked={resumeConsent}
+          onChange={(e) => {
+            setResumeConsent(e.target.checked)
+            if (e.target.checked) setUploadError("")
+          }}
+          className="mt-0.5 size-4 shrink-0 rounded border-line accent-primary cursor-pointer"
+        />
+        <label htmlFor="resume-consent-check" className="cursor-pointer select-none leading-relaxed">
+          <span className="font-semibold text-slate-900">Resume Data Processing Consent:</span> I consent to IntervAI storing this document and processing its text with AI models for career skills extraction, ATS scoring, and mock interview question personalization.
         </label>
       </div>
 

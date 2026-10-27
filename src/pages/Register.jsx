@@ -35,6 +35,11 @@ export default function Register() {
       setError("Passwords do not match.")
       return toast.warning("Passwords do not match.")
     }
+    if (!form.consentTerms || !form.consentData) {
+      const msg = "Please accept the Terms of Service and data processing consent to proceed."
+      setError(msg)
+      return toast.warning(msg)
+    }
     
     setLoading(true)
     setError("")
@@ -122,6 +127,45 @@ export default function Register() {
                 ))}
               </select>
             </label>
+
+            {/* Consumer Data Processing & Terms Consent Checkboxes */}
+            <div className="rounded-2xl border border-slate-200/90 bg-slate-50/70 p-4 space-y-3">
+              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Consumer Consent & Agreement</p>
+              
+              <div className="flex items-start gap-2.5 text-xs text-slate-700">
+                <input
+                  type="checkbox"
+                  id="register-consent-terms"
+                  name="consentTerms"
+                  required
+                  className="mt-0.5 size-4 shrink-0 rounded border-line accent-primary cursor-pointer"
+                />
+                <label htmlFor="register-consent-terms" className="cursor-pointer select-none leading-relaxed">
+                  I agree to IntervAI's{" "}
+                  <Link to="/privacy" target="_blank" className="font-semibold text-primary underline hover:text-primary-hover">
+                    Terms of Service
+                  </Link>{" "}
+                  and acknowledge the{" "}
+                  <Link to="/privacy" target="_blank" className="font-semibold text-primary underline hover:text-primary-hover">
+                    Privacy Policy
+                  </Link>
+                  . <span className="text-red-500">*</span>
+                </label>
+              </div>
+
+              <div className="flex items-start gap-2.5 text-xs text-slate-700">
+                <input
+                  type="checkbox"
+                  id="register-consent-data"
+                  name="consentData"
+                  required
+                  className="mt-0.5 size-4 shrink-0 rounded border-line accent-primary cursor-pointer"
+                />
+                <label htmlFor="register-consent-data" className="cursor-pointer select-none leading-relaxed">
+                  I consent to IntervAI collecting and processing my profile information, interview responses, and performance evaluations to generate AI scores and personalized coaching roadmaps. <span className="text-red-500">*</span>
+                </label>
+              </div>
+            </div>
 
             {error && (
               <div className="flex items-center gap-2.5 rounded-xl border border-rose-200 bg-rose-50/80 p-3.5 text-xs font-medium text-rose-800 shadow-xs animate-in fade-in">

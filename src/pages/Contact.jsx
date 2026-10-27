@@ -14,7 +14,7 @@ export default function Contact() {
   });
 
   const toast = useToast();
-  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", subject: "", message: "", consent: false });
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
@@ -28,6 +28,9 @@ export default function Contact() {
     if (!formData.subject.trim()) errs.subject = "Subject is required";
     if (!formData.message.trim() || formData.message.trim().length < 10) {
       errs.message = "Message must be at least 10 characters";
+    }
+    if (!formData.consent) {
+      errs.consent = "You must consent to data processing to submit this form";
     }
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -160,6 +163,28 @@ export default function Contact() {
                   placeholder="Describe your inquiry or feedback in detail..."
                 />
                 {errors.message && <p className="text-xs text-red-500 mt-1">{errors.message}</p>}
+              </div>
+
+              {/* Data Processing Consent Checkbox */}
+              <div className="rounded-xl border border-slate-200/90 bg-slate-50/70 p-3.5">
+                <div className="flex items-start gap-2.5">
+                  <input
+                    id="contact-consent"
+                    type="checkbox"
+                    required
+                    checked={formData.consent}
+                    onChange={(e) => setFormData({ ...formData, consent: e.target.checked })}
+                    className="mt-0.5 size-4 shrink-0 rounded border-line accent-primary cursor-pointer"
+                  />
+                  <label htmlFor="contact-consent" className="text-xs text-muted leading-relaxed cursor-pointer select-none">
+                    I consent to IntervAI collecting and processing my contact details (name, email) and inquiry details to respond to my request in accordance with the{" "}
+                    <Link to="/privacy" target="_blank" className="text-primary font-semibold underline hover:text-primary-hover">
+                      Privacy Policy
+                    </Link>
+                    . <span className="text-red-500">*</span>
+                  </label>
+                </div>
+                {errors.consent && <p className="text-xs text-red-500 mt-1.5 font-medium">{errors.consent}</p>}
               </div>
 
               <Button

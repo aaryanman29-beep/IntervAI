@@ -315,12 +315,15 @@ export default function MockInterview() {
             />
           </label>
 
-          <div className="my-6 flex justify-center">
+          <div className="my-6 flex flex-col items-center justify-center gap-3">
             <RecordingControls
               state={isRecording ? "recording" : aiState === "submitting" ? "processing" : "idle"}
               onToggle={toggleRecording}
               isSupported={speechSupported}
             />
+            <p className="text-center text-[11px] text-muted max-w-sm leading-normal">
+              🔒 Speech recognition is processed in your browser. By submitting, you consent to AI analysis of your spoken/typed responses.
+            </p>
           </div>
 
           {aiState === "submitting" && (

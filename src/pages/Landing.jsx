@@ -31,6 +31,7 @@ import { roles } from "../utils/constants"
 import { usePageMeta } from "../hooks/usePageMeta"
 import StructuredData from "../components/common/StructuredData"
 import intervaiLogo from "../assets/intervai-mark.webp"
+import CompanyLogo from "../components/common/CompanyLogo"
 
 function useScrollReveal() {
   useEffect(() => {
@@ -59,14 +60,18 @@ const roleTracks = [
 ]
 
 const companies = [
-  { name: "Google", domain: "google.com" },
-  { name: "Meta", domain: "meta.com" },
   { name: "Amazon", domain: "amazon.com" },
   { name: "Microsoft", domain: "microsoft.com" },
   { name: "OpenAI", domain: "openai.com" },
   { name: "Apple", domain: "apple.com" },
   { name: "Stripe", domain: "stripe.com" },
-  { name: "Netflix", domain: "netflix.com" }
+  { name: "Netflix", domain: "netflix.com" },
+  { name: "Google", domain: "google.com" },
+  { name: "Meta", domain: "meta.com" },
+  { name: "Uber", domain: "uber.com" },
+  { name: "Airbnb", domain: "airbnb.com" },
+  { name: "Spotify", domain: "spotify.com" },
+  { name: "NVIDIA", domain: "nvidia.com" }
 ]
 
 export default function Landing() {
@@ -289,18 +294,20 @@ export default function Landing() {
               {companies.map((comp, idx) => (
                 <div
                   key={`track1-${comp.name}-${idx}`}
-                  className="flex items-center justify-center py-2.5 px-6 bg-white rounded-xl border border-slate-200/80 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 shrink-0 select-none cursor-pointer"
+                  className="flex items-center gap-2.5 py-2.5 px-5 bg-white rounded-xl border border-slate-200/80 text-slate-800 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 shrink-0 select-none cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
                 >
-                  {comp.name}
+                  <CompanyLogo name={comp.name} className="size-5 shrink-0" />
+                  <span>{comp.name}</span>
                 </div>
               ))}
               {/* Set 2 (Identical mirror for seamless infinite loop) */}
               {companies.map((comp, idx) => (
                 <div
                   key={`track2-${comp.name}-${idx}`}
-                  className="flex items-center justify-center py-2.5 px-6 bg-white rounded-xl border border-slate-200/80 text-slate-700 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 shrink-0 select-none cursor-pointer"
+                  className="flex items-center gap-2.5 py-2.5 px-5 bg-white rounded-xl border border-slate-200/80 text-slate-800 font-bold text-sm tracking-tight hover:text-indigo-600 hover:border-indigo-400 hover:shadow-sm transition-all duration-200 shrink-0 select-none cursor-pointer shadow-[0_1px_2px_rgba(0,0,0,0.03)]"
                 >
-                  {comp.name}
+                  <CompanyLogo name={comp.name} className="size-5 shrink-0" />
+                  <span>{comp.name}</span>
                 </div>
               ))}
             </div>
