@@ -33,9 +33,9 @@ public class InterviewService {
     private final AnswerEvaluator answerEvaluator;
     private final ObjectMapper objectMapper;
 
-    @Transactional
     public Interview createInterview(String userId, CreateInterviewRequest request) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         Resume resume = null;
         String resumeSkills = "None provided";
 
@@ -49,6 +49,17 @@ public class InterviewService {
             }
         }
 
+        // Generate initial questions via AI OUTSIDE any database transaction
+        List<Map<String, Object>> aiQuestions = questionGenerator.generateQuestions(
+                request.getTargetRole(), request.getExperienceLevel(), 
+                request.getInterviewType().name(), request.getCompany(), resumeSkills);
+
+        // Fast atomic transaction (<5ms) to persist interview and generated questions
+        return saveInterviewAndQuestions(user, resume, request, aiQuestions);
+    }
+
+    @Transactional
+    public Interview saveInterviewAndQuestions(User user, Resume resume, CreateInterviewRequest request, List<Map<String, Object>> aiQuestions) {
         Interview interview = Interview.builder()
                 .user(user)
                 .resume(resume)
@@ -60,11 +71,6 @@ public class InterviewService {
                 .build();
         
         interview = interviewRepository.save(interview);
-
-        // Generate initial questions via AI
-        List<Map<String, Object>> aiQuestions = questionGenerator.generateQuestions(
-                request.getTargetRole(), request.getExperienceLevel(), 
-                request.getInterviewType().name(), request.getCompany(), resumeSkills);
 
         int order = 1;
         for (Map<String, Object> qData : aiQuestions) {
@@ -125,7 +131,6 @@ public class InterviewService {
         return interviewRepository.save(interview);
     }
 
-    @Transactional
     public Answer submitAnswer(String userId, String interviewId, SubmitAnswerRequest request) {
         Interview interview = getInterview(interviewId, userId);
         if (interview.getStatus() != InterviewStatus.IN_PROGRESS) {
@@ -143,16 +148,26 @@ public class InterviewService {
             throw new IllegalArgumentException("Answer already submitted for this question");
         }
 
-        // Evaluate answer
+        // Evaluate answer via AI OUTSIDE any database transaction
         Map<String, Object> evaluation = answerEvaluator.evaluateAnswer(
                 question.getQuestionText(), request.getAnswerText(), 
                 interview.getTargetRole(), interview.getExperienceLevel());
 
-        Answer answer = new Answer();
+        // Fast atomic transaction (<5ms) to persist answer and optional follow-up
+        return persistAnswerAndFollowUp(interview, question, request.getAnswerText(), evaluation);
+    }
+
+    @Transactional
+    public Answer persistAnswerAndFollowUp(Interview interview, Question question, String answerText, Map<String, Object> evaluation) {
+        if (answerRepository.findByQuestionId(question.getId()).isPresent()) {
+            throw new IllegalArgumentException("Answer already submitted for this question");
+        }
+
+        Answer answer;
         try {
             answer = Answer.builder()
                     .question(question)
-                    .answerText(request.getAnswerText())
+                    .answerText(answerText)
                     .score((Integer) evaluation.get("score"))
                     .correctnessScore((Integer) evaluation.get("correctnessScore"))
                     .clarityScore((Integer) evaluation.get("clarityScore"))
@@ -172,7 +187,7 @@ public class InterviewService {
             rawFq.forEach((k, v) -> {
                 if (k != null) fq.put(k.toString(), v);
             });
-            List<Question> existing = questionRepository.findByInterviewIdOrderByQuestionOrderAsc(interviewId);
+            List<Question> existing = questionRepository.findByInterviewIdOrderByQuestionOrderAsc(interview.getId());
             int maxOrder = existing.stream().mapToInt(q -> q.getQuestionOrder()).max().orElse(0);
 
             Question followUp = Question.builder()

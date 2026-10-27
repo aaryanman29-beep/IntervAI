@@ -23,10 +23,28 @@ const handleResponse = async (response) => {
   }
   
   const text = await response.text();
-  const data = text ? JSON.parse(text) : null;
+  let data = null;
+  if (text) {
+    try {
+      data = JSON.parse(text);
+    } catch {
+      // Non-JSON response payload (e.g. HTML 502/503/504 from Nginx or cloud gateway)
+      data = null;
+    }
+  }
   
   if (!response.ok) {
-    const error = new Error(data?.message || response.statusText || "An API error occurred");
+    let message = data?.message;
+    if (!message) {
+      if (response.status === 429) {
+        message = "High traffic detected. Please wait a few seconds before trying again.";
+      } else if (response.status === 502 || response.status === 503 || response.status === 504) {
+        message = "The server is currently experiencing heavy load. Please retry in a moment.";
+      } else {
+        message = response.statusText || "An API error occurred";
+      }
+    }
+    const error = new Error(message);
     error.status = response.status;
     error.data = data;
     throw error;

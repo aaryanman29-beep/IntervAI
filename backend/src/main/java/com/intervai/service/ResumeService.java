@@ -36,6 +36,9 @@ public class ResumeService {
     private final ResumeAnalyzer resumeAnalyzer;
     private final ObjectMapper objectMapper;
 
+    // Limit concurrent in-memory PDF parsing to 8 simultaneous documents to protect JVM heap from OOM
+    private final java.util.concurrent.Semaphore pdfParserSemaphore = new java.util.concurrent.Semaphore(8);
+
     @Transactional
     public Resume uploadResume(String userId, MultipartFile file) {
         User user = userRepository.findById(userId)
@@ -66,19 +69,33 @@ public class ResumeService {
         String filePath = fileStorageService.storeFile(file);
         
         String extractedText;
-        try (PDDocument document = Loader.loadPDF(fileBytes)) {
-            // Defense in depth against PDF bombs: reject excessively large PDFs (> 10 pages)
-            if (document.getNumberOfPages() > 10) {
-                throw new IllegalArgumentException("PDF exceeds maximum allowed page limit of 10 pages.");
+        boolean acquired = false;
+        try {
+            acquired = pdfParserSemaphore.tryAcquire(15, java.util.concurrent.TimeUnit.SECONDS);
+            if (!acquired) {
+                throw new IllegalStateException("Server is under heavy upload load. Please retry in a few moments.");
             }
-            PDFTextStripper stripper = new PDFTextStripper();
-            stripper.setSortByPosition(true);
-            extractedText = stripper.getText(document);
-        } catch (IllegalArgumentException e) {
+            try (PDDocument document = Loader.loadPDF(fileBytes)) {
+                // Defense in depth against PDF bombs: reject excessively large PDFs (> 10 pages)
+                if (document.getNumberOfPages() > 10) {
+                    throw new IllegalArgumentException("PDF exceeds maximum allowed page limit of 10 pages.");
+                }
+                PDFTextStripper stripper = new PDFTextStripper();
+                stripper.setSortByPosition(true);
+                extractedText = stripper.getText(document);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("PDF processing interrupted", e);
+        } catch (IllegalArgumentException | IllegalStateException e) {
             throw e;
         } catch (IOException e) {
             log.error("Failed to extract text from PDF: {}", e.getMessage());
             extractedText = "TEXT_EXTRACTION_FAILED";
+        } finally {
+            if (acquired) {
+                pdfParserSemaphore.release();
+            }
         }
 
         Resume resume = Resume.builder()
@@ -103,7 +120,6 @@ public class ResumeService {
                 .orElseThrow(() -> new ResourceNotFoundException("Resume not found or not owned by user"));
     }
 
-    @Transactional
     public ResumeAnalysis analyzeResume(String resumeId, String userId) {
         Resume resume = getResume(resumeId, userId);
         
@@ -116,7 +132,17 @@ public class ResumeService {
             throw new IllegalArgumentException("Cannot analyze resume without text content");
         }
 
+        // Call Gemini AI analysis OUTSIDE database transaction
         Map<String, Object> aiResult = resumeAnalyzer.analyzeResume(resume.getExtractedText());
+
+        return saveResumeAnalysis(resume, aiResult);
+    }
+
+    @Transactional
+    public ResumeAnalysis saveResumeAnalysis(Resume resume, Map<String, Object> aiResult) {
+        resumeAnalysisRepository.findByResumeId(resume.getId()).ifPresent(analysis -> {
+            throw new IllegalArgumentException("Resume already analyzed");
+        });
 
         try {
             ResumeAnalysis analysis = ResumeAnalysis.builder()

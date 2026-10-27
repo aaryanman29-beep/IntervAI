@@ -2,11 +2,21 @@ spring:
   application:
     name: intervai
 
+  threads:
+    virtual:
+      enabled: true
+
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata}
     username: ${SPRING_DATASOURCE_USERNAME:root}
     password: ${SPRING_DATASOURCE_PASSWORD:Root@7317}
     driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 50
+      minimum-idle: 10
+      connection-timeout: 20000
+      idle-timeout: 300000
+      max-lifetime: 1800000
 
   jpa:
     hibernate:
@@ -31,11 +41,21 @@ intervai:
     api-key: ${GEMINI_API_KEY:}
 
   storage:
+    type: ${STORAGE_TYPE:local}
     upload-dir: ${STORAGE_UPLOAD_DIR:uploads}
     max-file-size: 5MB
+    s3:
+      bucket: ${AWS_S3_BUCKET:intervai-resumes}
+    gcs:
+      bucket: ${GCS_BUCKET:intervai-resumes}
 
 server:
   port: 8080
+  tomcat:
+    threads:
+      max: 400
+      min-spare: 50
+    accept-count: 500
 
 logging:
   level:

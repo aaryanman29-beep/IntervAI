@@ -29,14 +29,20 @@ public class RoadmapService {
         return roadmapRepository.findByUserId(userId);
     }
 
-    @Transactional
     public List<LearningRoadmap> generateRoadmap(String userId, String targetRole, String skills, String weakAreas) {
-        User user = userRepository.findById(userId).orElseThrow();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
         
+        // Generate roadmap via AI OUTSIDE database transaction
         List<Map<String, Object>> aiRoadmap = roadmapGenerator.generateRoadmap(targetRole, skills, weakAreas);
 
+        return saveRoadmapAtomic(user, aiRoadmap);
+    }
+
+    @Transactional
+    public List<LearningRoadmap> saveRoadmapAtomic(User user, List<Map<String, Object>> aiRoadmap) {
         // Delete existing roadmap
-        List<LearningRoadmap> existing = roadmapRepository.findByUserId(userId);
+        List<LearningRoadmap> existing = roadmapRepository.findByUserId(user.getId());
         roadmapRepository.deleteAll(existing);
 
         for (Map<String, Object> item : aiRoadmap) {
@@ -56,6 +62,6 @@ public class RoadmapService {
             }
         }
         
-        return roadmapRepository.findByUserId(userId);
+        return roadmapRepository.findByUserId(user.getId());
     }
 }
