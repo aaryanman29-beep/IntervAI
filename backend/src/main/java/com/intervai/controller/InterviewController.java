@@ -3,6 +3,7 @@ package com.intervai.controller;
 import com.intervai.dto.ApiResponse;
 import com.intervai.dto.CreateInterviewRequest;
 import com.intervai.dto.SubmitAnswerRequest;
+import com.intervai.dto.TranscribeResponse;
 import com.intervai.entity.Answer;
 import com.intervai.entity.Interview;
 import com.intervai.entity.Question;
@@ -10,9 +11,11 @@ import com.intervai.security.UserDetailsImpl;
 import com.intervai.service.InterviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -109,6 +112,60 @@ public class InterviewController {
 
         Answer answer = interviewService.submitAnswer(userDetails.getId(), id, request);
         return ResponseEntity.ok(ApiResponse.success(answer, "Answer evaluated successfully"));
+    }
+
+    @PostMapping(value = "/transcribe", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<TranscribeResponse>> transcribeAnswer(
+            @AuthenticationPrincipal UserDetailsImpl userDetails,
+            @RequestParam("audio") MultipartFile audio,
+            @RequestParam("sessionId") String sessionId,
+            @RequestParam(value = "questionId", required = false) String questionId) {
+
+        // Rate limit: max 10 audio transcriptions per minute per user to safeguard quota & prevent abuse
+        String rateKey = "transcribe:" + userDetails.getId();
+        if (!rateLimiterService.tryAcquire(rateKey, 10, 60_000)) {
+            return ResponseEntity.status(429)
+                    .body(ApiResponse.error("Transcription rate limit reached. Please wait before submitting more audio.", "RATE_LIMIT_EXCEEDED"));
+        }
+
+        // Validate audio file
+        if (audio == null || audio.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Audio recording cannot be empty", "INVALID_AUDIO"));
+        }
+
+        long maxSizeBytes = 25 * 1024 * 1024; // 25 MB
+        if (audio.getSize() > maxSizeBytes) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Audio file exceeds maximum size limit of 25MB", "FILE_TOO_LARGE"));
+        }
+
+        // Check content type if available
+        String contentType = audio.getContentType();
+        if (contentType != null && !contentType.isBlank()) {
+            String lower = contentType.toLowerCase();
+            boolean isAllowed = lower.startsWith("audio/") || 
+                                lower.startsWith("video/") || 
+                                lower.contains("octet-stream") ||
+                                lower.contains("webm") ||
+                                lower.contains("wav") ||
+                                lower.contains("ogg") ||
+                                lower.contains("mp4") ||
+                                lower.contains("mpeg");
+            if (!isAllowed) {
+                return ResponseEntity.badRequest()
+                        .body(ApiResponse.error("Unsupported audio format: " + contentType, "UNSUPPORTED_MEDIA_TYPE"));
+            }
+        }
+
+        TranscribeResponse response = interviewService.transcribeAndProcessAnswer(
+                userDetails.getId(),
+                sessionId,
+                questionId,
+                audio
+        );
+
+        return ResponseEntity.ok(ApiResponse.success(response, "Audio transcribed and saved successfully"));
     }
 
     @PostMapping("/{id}/complete")

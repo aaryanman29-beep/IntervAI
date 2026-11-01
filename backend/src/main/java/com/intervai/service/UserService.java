@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final com.intervai.security.CustomUserDetailsService userDetailsService;
 
     public UserResponse getProfile(String userId) {
         User user = userRepository.findById(userId)
@@ -38,6 +39,9 @@ public class UserService {
         }
 
         User updatedUser = userRepository.save(user);
+        if (userDetailsService != null && updatedUser.getEmail() != null) {
+            userDetailsService.evictUser(updatedUser.getEmail());
+        }
         return toUserResponse(updatedUser);
     }
 

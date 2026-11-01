@@ -6,6 +6,7 @@ import PageContainer from "../components/layout/PageContainer"
 import { useAsync } from "../hooks/useAsync"
 import { dashboardApi } from "../services/api/dashboardApi"
 import { EmptyState, ErrorState } from "../components/feedback/StateViews"
+import { useAuth } from "../contexts/AuthContext"
 
 const priorityColors = {
   HIGH: "text-red-600 bg-red-50",
@@ -14,6 +15,7 @@ const priorityColors = {
 }
 
 export default function Roadmap() {
+  const { user } = useAuth()
   const { data, loading, error, refetch } = useAsync(() => dashboardApi.getRoadmap())
   const [generating, setGenerating] = useState(false)
   const [generateError, setGenerateError] = useState("")
@@ -22,10 +24,12 @@ export default function Roadmap() {
     setGenerating(true)
     setGenerateError("")
     try {
+      const activeRole = user?.targetRole || "Software Engineer"
+      const activeExp = user?.experienceLevel || "Mid-Level"
       await dashboardApi.generateRoadmap({
-        targetRole: "Software Engineer",
-        skills: "JavaScript, React",
-        weakAreas: "System Design, Algorithms",
+        targetRole: activeRole,
+        skills: `${activeRole} Core Competencies, Distributed Systems`,
+        weakAreas: `Advanced ${activeRole} System Architecture & Real-world Optimization (${activeExp})`,
       })
       refetch()
     } catch (err) {

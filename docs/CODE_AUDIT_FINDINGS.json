@@ -1,0 +1,50 @@
+[
+  {
+    "id": "PERF-001",
+    "severity": "P2",
+    "category": "Backend State / Caching",
+    "status": "CONFIRMED",
+    "location": "backend/src/main/java/com/intervai/service/UserService.java",
+    "evidence": "CustomUserDetailsService caches UserDetails instances in-memory with a 5-minute TTL. When UserService.updateProfile was called, the cache entry was not invalidated, serving stale profile details for up to 5 minutes.",
+    "impact": "Users modifying their target role or name would see outdated attributes in authenticated context queries (/api/auth/me) until TTL expiry.",
+    "rootCause": "Lack of cache eviction call in UserService.updateProfile.",
+    "remediation": "Injected CustomUserDetailsService into UserService and triggered userDetailsService.evictUser(email) upon successful profile persistence.",
+    "verification": "UserServiceTest.testUpdateProfile_Success verified eviction invocation; full Maven test suite passed with 16/16 tests passing."
+  },
+  {
+    "id": "FE-001",
+    "severity": "P2",
+    "category": "Frontend State Sync",
+    "status": "CONFIRMED",
+    "location": "src/pages/QuestionDetails.jsx",
+    "evidence": "Clicking the bookmark button on the Question Details screen only toggled component-local boolean state (saved) without modifying localStorage['intervai_bookmarks'].",
+    "impact": "Questions bookmarked on the detail screen were not reflected in the Bookmarks view or Question Bank list.",
+    "rootCause": "Missing integration with localStorage['intervai_bookmarks'] in QuestionDetails.jsx.",
+    "remediation": "Added localStorage synchronization on mount and an interactive toggleBookmark handler updating intervai_bookmarks.",
+    "verification": "Frontend build and Vitest suite passed cleanly; verified with vitest and vite build."
+  },
+  {
+    "id": "FE-002",
+    "severity": "P3",
+    "category": "Frontend UX",
+    "status": "CONFIRMED",
+    "location": "src/pages/History.jsx",
+    "evidence": "The sort button rendered with text 'Newest first' but had no onClick handler or state hook to toggle sort order.",
+    "impact": "User interaction with the sorting control did nothing.",
+    "rootCause": "Unbound presentation button without state handler.",
+    "remediation": "Added sortOrder state ('desc' / 'asc'), date-based comparator function, and toggle handler.",
+    "verification": "Verified via npm test and npm run build."
+  },
+  {
+    "id": "FE-003",
+    "severity": "P3",
+    "category": "Feature Completeness",
+    "status": "CONFIRMED",
+    "location": "src/pages/Roadmap.jsx",
+    "evidence": "Regenerate button in Roadmap.jsx submitted hardcoded values ('Software Engineer', 'JavaScript, React') regardless of user profile.",
+    "impact": "Users preparing for non-SWE roles (e.g., Product Management, Data Engineering) received irrelevant learning roadmaps.",
+    "rootCause": "Roadmap.jsx did not consume authenticated user data from AuthContext.",
+    "remediation": "Imported useAuth in Roadmap.jsx and dynamically passed user.targetRole and user.experienceLevel into generateRoadmap.",
+    "verification": "Verified via npm test and npm run build."
+  }
+]

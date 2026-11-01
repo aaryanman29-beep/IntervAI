@@ -42,6 +42,11 @@ intervai:
     model: ${GEMINI_MODEL:gemini-1.5-flash}
     api-url: ${GEMINI_API_URL:https://generativelanguage.googleapis.com/v1beta/models}
 
+  elevenlabs:
+    api-key: ${ELEVENLABS_API_KEY:}
+    stt-model-id: ${ELEVENLABS_STT_MODEL_ID:scribe_v2}
+    api-url: ${ELEVENLABS_API_URL:https://api.elevenlabs.io/v1/speech-to-text}
+
   storage:
     type: ${STORAGE_TYPE:local}
     upload-dir: ${STORAGE_UPLOAD_DIR:uploads}

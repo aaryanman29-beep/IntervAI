@@ -32,6 +32,10 @@ export default function QuestionDetails() {
   useEffect(() => {
     const q = fetchedQuestion?.questionText ? fetchedQuestion : fetchedQuestion?.data
     if (q) {
+      const savedBookmarks = JSON.parse(localStorage.getItem('intervai_bookmarks') || '[]')
+      const isBookmarked = savedBookmarks.includes(q.id)
+      setSaved(isBookmarked)
+
       setQuestion({
         id: q.id,
         question: q.questionText,
@@ -39,7 +43,7 @@ export default function QuestionDetails() {
         difficulty: q.difficulty,
         topic: q.topic,
         role: q.interview?.targetRole || "Practice Question",
-        bookmarked: false,
+        bookmarked: isBookmarked,
         answer: "This is a placeholder example answer since you are viewing a past question.",
         keyPoints: [
           "Explain your thought process",
@@ -49,6 +53,22 @@ export default function QuestionDetails() {
       })
     }
   }, [fetchedQuestion])
+
+  const toggleBookmark = () => {
+    if (!question) return
+    const nextSaved = !saved
+    setSaved(nextSaved)
+    setQuestion(prev => prev ? { ...prev, bookmarked: nextSaved } : prev)
+
+    const savedBookmarks = JSON.parse(localStorage.getItem('intervai_bookmarks') || '[]')
+    let updated
+    if (nextSaved) {
+      updated = savedBookmarks.includes(question.id) ? savedBookmarks : [...savedBookmarks, question.id]
+    } else {
+      updated = savedBookmarks.filter(id => id !== question.id)
+    }
+    localStorage.setItem('intervai_bookmarks', JSON.stringify(updated))
+  }
 
   return (
     <PageContainer>
@@ -86,7 +106,7 @@ export default function QuestionDetails() {
                   <Button
                     variant="secondary"
                     icon={Bookmark}
-                    onClick={() => setSaved(!saved)}
+                    onClick={toggleBookmark}
                   >
                     {saved ? "Bookmarked" : "Bookmark"}
                   </Button>

@@ -23,6 +23,9 @@ class UserServiceTest {
     @Mock
     private UserRepository userRepository;
 
+    @Mock
+    private com.intervai.security.CustomUserDetailsService userDetailsService;
+
     @InjectMocks
     private UserService userService;
 
@@ -86,5 +89,6 @@ class UserServiceTest {
         assertEquals("Senior Backend Engineer", response.getTargetRole());
         assertEquals("Senior", response.getExperienceLevel());
         verify(userRepository, times(1)).save(user);
+        verify(userDetailsService, times(1)).evictUser("alex@example.com");
     }
 }

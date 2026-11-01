@@ -1,16 +1,19 @@
 package com.intervai.service;
 
 import com.intervai.dto.CreateInterviewRequest;
+import com.intervai.dto.TranscribeResponse;
 import com.intervai.entity.*;
 import com.intervai.exception.ResourceNotFoundException;
 import com.intervai.repository.*;
 import com.intervai.service.ai.AnswerEvaluator;
+import com.intervai.service.ai.ElevenLabsSttService;
 import com.intervai.service.ai.QuestionGenerator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockMultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +48,12 @@ class InterviewServiceTest {
 
     @Mock
     private AnswerEvaluator answerEvaluator;
+
+    @Mock
+    private ElevenLabsSttService elevenLabsSttService;
+
+    @Mock
+    private com.fasterxml.jackson.databind.ObjectMapper objectMapper;
 
     @InjectMocks
     private InterviewService interviewService;
@@ -134,5 +143,77 @@ class InterviewServiceTest {
 
         assertThrows(ResourceNotFoundException.class, () ->
                 interviewService.getInterview("unknown-id", "user-123"));
+    }
+
+    @Test
+    void testTranscribeAndProcessAnswer_SuccessWithQuestionAndEvaluation() {
+        sampleInterview.setStatus(InterviewStatus.IN_PROGRESS);
+        Question question = Question.builder()
+                .id("q-1")
+                .interview(sampleInterview)
+                .questionText("Explain Java concurrency")
+                .build();
+
+        MockMultipartFile audio = new MockMultipartFile("audio", "speech.webm", "audio/webm", "bytes".getBytes());
+
+        when(interviewRepository.findByIdAndUserId("interview-456", "user-123"))
+                .thenReturn(Optional.of(sampleInterview));
+        when(questionRepository.findById("q-1")).thenReturn(Optional.of(question));
+        when(answerRepository.findByQuestionId("q-1")).thenReturn(Optional.empty());
+
+        when(elevenLabsSttService.transcribeAudio(audio))
+                .thenReturn(new ElevenLabsSttService.TranscriptionResult("Java concurrency uses threads and locks", "en"));
+
+        when(answerEvaluator.evaluateAnswer(anyString(), anyString(), anyString(), anyString()))
+                .thenReturn(Map.of(
+                        "score", 90,
+                        "correctnessScore", 92,
+                        "clarityScore", 88,
+                        "technicalDepthScore", 90,
+                        "strengths", List.of("Good explanation"),
+                        "weaknesses", List.of("None"),
+                        "feedback", "Well done",
+                        "needsFollowUp", false
+                ));
+
+        when(answerRepository.save(any(Answer.class))).thenAnswer(invocation -> {
+            Answer a = invocation.getArgument(0);
+            a.setId("ans-saved-1");
+            return a;
+        });
+
+        TranscribeResponse response = interviewService.transcribeAndProcessAnswer("user-123", "interview-456", "q-1", audio);
+
+        assertNotNull(response);
+        assertEquals("Java concurrency uses threads and locks", response.getTranscript());
+        assertEquals("ans-saved-1", response.getAnswerId());
+        assertTrue(response.getEvaluated());
+        assertEquals("en", response.getDetectedLanguage());
+        verify(answerRepository, times(1)).save(any(Answer.class));
+    }
+
+    @Test
+    void testTranscribeAndProcessAnswer_UnauthorizedSession() {
+        MockMultipartFile audio = new MockMultipartFile("audio", "speech.webm", "audio/webm", "bytes".getBytes());
+        when(interviewRepository.findByIdAndUserId("interview-456", "user-unauthorized"))
+                .thenReturn(Optional.empty());
+
+        assertThrows(ResourceNotFoundException.class, () ->
+                interviewService.transcribeAndProcessAnswer("user-unauthorized", "interview-456", "q-1", audio));
+    }
+
+    @Test
+    void testTranscribeAndProcessAnswer_EmptyTranscript_ThrowsException() {
+        sampleInterview.setStatus(InterviewStatus.IN_PROGRESS);
+        MockMultipartFile audio = new MockMultipartFile("audio", "speech.webm", "audio/webm", "bytes".getBytes());
+
+        when(interviewRepository.findByIdAndUserId("interview-456", "user-123"))
+                .thenReturn(Optional.of(sampleInterview));
+        when(elevenLabsSttService.transcribeAudio(audio))
+                .thenReturn(new ElevenLabsSttService.TranscriptionResult("", "en"));
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                interviewService.transcribeAndProcessAnswer("user-123", "interview-456", null, audio));
+        assertTrue(ex.getMessage().contains("No speech detected"));
     }
 }

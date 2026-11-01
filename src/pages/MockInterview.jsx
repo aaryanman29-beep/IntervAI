@@ -44,14 +44,9 @@ export default function MockInterview() {
   const [submittedQuestions, setSubmittedQuestions] = useState(new Set())
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
-  const [isRecording, setIsRecording] = useState(false)
-  const [recognition, setRecognition] = useState(null)
-  const [speechSupported, setSpeechSupported] = useState(true)
 
   const baseAnswerRef = useRef("")
   const currentIdxRef = useRef(0)
-  const isRecordingRef = useRef(false)
-  const recognitionRef = useRef(null)
 
   useEffect(() => {
     baseAnswerRef.current = answer
@@ -61,92 +56,19 @@ export default function MockInterview() {
     currentIdxRef.current = currentIdx
   }, [currentIdx])
 
-  useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
-    if (SpeechRecognition) {
-      const recognizer = new SpeechRecognition()
-      recognizer.continuous = true
-      recognizer.interimResults = true
-      recognizer.lang = "en-US"
+  const handleTranscriptionSuccess = async (transcribeData) => {
+    if (!transcribeData?.transcript) return
+    const newTranscript = transcribeData.transcript
+    setAnswer(newTranscript)
 
-      recognizer.onresult = (event) => {
-        // Guard against callbacks firing after question navigation
-        const sessionQuestionIdx = recognizer._targetQuestionIdx
-        if (sessionQuestionIdx !== undefined && sessionQuestionIdx !== currentIdxRef.current) {
-          return
-        }
-
-        let finalChunk = ""
-        let interimChunk = ""
-
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          const piece = event.results[i][0].transcript
-          if (event.results[i].isFinal) {
-            finalChunk += piece
-          } else {
-            interimChunk += piece
-          }
-        }
-
-        if (finalChunk) {
-          const currentBase = baseAnswerRef.current.trim()
-          const newBase = currentBase ? `${currentBase} ${finalChunk.trim()}` : finalChunk.trim()
-          baseAnswerRef.current = newBase
-          setAnswer(newBase)
-        } else if (interimChunk) {
-          const currentBase = baseAnswerRef.current.trim()
-          const fullText = currentBase ? `${currentBase} ${interimChunk.trim()}` : interimChunk.trim()
-          setAnswer(fullText)
-        }
+    // If backend already performed Gemini evaluation with question
+    if (transcribeData.evaluation) {
+      setLastEvaluation(transcribeData.evaluation)
+      setAiState("submitted")
+      if (currentQuestion?.id) {
+        setSubmittedQuestions((prev) => new Set([...prev, currentQuestion.id]))
       }
-
-      recognizer.onerror = (e) => {
-        console.warn("Speech recognition error:", e.error)
-        isRecordingRef.current = false
-        setIsRecording(false)
-      }
-
-      recognizer.onend = () => {
-        isRecordingRef.current = false
-        setIsRecording(false)
-      }
-
-      recognitionRef.current = recognizer
-      setRecognition(recognizer)
-
-      return () => {
-        try {
-          recognizer.abort()
-        } catch {}
-      }
-    } else {
-      setSpeechSupported(false)
-    }
-  }, [])
-
-  const stopActiveRecording = () => {
-    if (recognitionRef.current && isRecordingRef.current) {
-      try {
-        recognitionRef.current.stop()
-      } catch {}
-      isRecordingRef.current = false
-      setIsRecording(false)
-    }
-  }
-
-  const toggleRecording = () => {
-    if (!recognitionRef.current) return
-    if (isRecording) {
-      stopActiveRecording()
-    } else {
-      try {
-        recognitionRef.current._targetQuestionIdx = currentIdxRef.current
-        recognitionRef.current.start()
-        isRecordingRef.current = true
-        setIsRecording(true)
-      } catch (err) {
-        console.warn("Recognition start failed:", err)
-      }
+      await refreshQuestions()
     }
   }
 
@@ -207,7 +129,6 @@ export default function MockInterview() {
   }
 
   const nextQuestion = () => {
-    stopActiveRecording()
     baseAnswerRef.current = ""
     setAnswer("")
     setAiState("idle")
@@ -351,13 +272,12 @@ export default function MockInterview() {
 
           <div className="my-6 flex flex-col items-center justify-center gap-3">
             <RecordingControls
-              state={isRecording ? "recording" : aiState === "submitting" ? "processing" : "idle"}
-              onToggle={toggleRecording}
-              isSupported={speechSupported}
+              sessionId={interviewId}
+              questionId={currentQuestion?.id}
+              disabled={hasSubmittedCurrent || aiState === "submitting"}
+              apiTranscribeFn={interviewApi.transcribeAudio}
+              onTranscriptionSuccess={handleTranscriptionSuccess}
             />
-            <p className="text-center text-[11px] text-muted max-w-sm leading-normal">
-              🔒 Speech recognition is processed in your browser. By submitting, you consent to AI analysis of your spoken/typed responses.
-            </p>
           </div>
 
           {aiState === "submitting" && (
@@ -378,7 +298,6 @@ export default function MockInterview() {
               variant="ghost"
               disabled={currentIdx === 0}
               onClick={() => {
-                stopActiveRecording()
                 baseAnswerRef.current = ""
                 setAnswer("")
                 setAiState("idle")

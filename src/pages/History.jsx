@@ -26,11 +26,22 @@ function statusBadgeVariant(status) {
 
 export default function History() {
   const [search, setSearch] = useState("")
+  const [sortOrder, setSortOrder] = useState("desc") // "desc" = newest first, "asc" = oldest first
   const { data, loading, error, refetch } = useAsync(() => interviewApi.getAll())
 
-  const interviews = (data || []).filter((item) =>
-    (item.targetRole || "").toLowerCase().includes(search.toLowerCase())
-  )
+  const interviews = (data || [])
+    .filter((item) =>
+      (item.targetRole || "").toLowerCase().includes(search.toLowerCase())
+    )
+    .sort((a, b) => {
+      const timeA = new Date(a.createdAt || 0).getTime()
+      const timeB = new Date(b.createdAt || 0).getTime()
+      return sortOrder === "desc" ? timeB - timeA : timeA - timeB
+    })
+
+  const toggleSort = () => {
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
+  }
 
   return (
     <PageContainer
@@ -46,11 +57,12 @@ export default function History() {
           />
         </div>
         <button
-          className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-line bg-white px-4 text-sm font-semibold"
-          aria-label="Sort options"
+          onClick={toggleSort}
+          className="inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-line bg-white px-4 text-sm font-semibold transition-colors hover:bg-slate-50"
+          aria-label={`Sort by date, currently ${sortOrder === "desc" ? "newest first" : "oldest first"}`}
         >
-          <ArrowUpDown className="size-4" />
-          Newest first
+          <ArrowUpDown className="size-4 text-muted" />
+          <span>{sortOrder === "desc" ? "Newest first" : "Oldest first"}</span>
         </button>
       </div>
 

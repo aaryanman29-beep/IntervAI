@@ -8,7 +8,10 @@ import com.intervai.entity.*;
 import com.intervai.exception.ResourceNotFoundException;
 import com.intervai.repository.*;
 import com.intervai.service.ai.AnswerEvaluator;
+import com.intervai.service.ai.ElevenLabsSttService;
 import com.intervai.service.ai.QuestionGenerator;
+import com.intervai.dto.TranscribeResponse;
+import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,6 +34,7 @@ public class InterviewService {
     private final ResumeAnalysisRepository resumeAnalysisRepository;
     private final QuestionGenerator questionGenerator;
     private final AnswerEvaluator answerEvaluator;
+    private final ElevenLabsSttService elevenLabsSttService;
     private final ObjectMapper objectMapper;
 
     public Interview createInterview(String userId, CreateInterviewRequest request) {
@@ -155,6 +159,94 @@ public class InterviewService {
 
         // Fast atomic transaction (<5ms) to persist answer and optional follow-up
         return persistAnswerAndFollowUp(interview, question, request.getAnswerText(), evaluation);
+    }
+
+    public TranscribeResponse transcribeAndProcessAnswer(
+            String userId,
+            String sessionId,
+            String questionId,
+            MultipartFile audio) {
+
+        Interview interview = getInterview(sessionId, userId);
+        if (interview.getStatus() != InterviewStatus.IN_PROGRESS) {
+            throw new IllegalArgumentException("Interview is not in progress");
+        }
+
+        Question question = null;
+        if (questionId != null && !questionId.isBlank()) {
+            question = questionRepository.findById(questionId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Question not found"));
+            if (!question.getInterview().getId().equals(sessionId)) {
+                throw new IllegalArgumentException("Question does not belong to this interview session");
+            }
+            if (answerRepository.findByQuestionId(question.getId()).isPresent()) {
+                throw new IllegalArgumentException("Answer already submitted for this question");
+            }
+        }
+
+        // 1. Transcribe audio via ElevenLabs Speech-to-Text (Scribe)
+        ElevenLabsSttService.TranscriptionResult result = elevenLabsSttService.transcribeAudio(audio);
+        String transcript = result.text();
+
+        if (transcript == null || transcript.isBlank()) {
+            throw new IllegalArgumentException("No speech detected in audio file");
+        }
+
+        // 2. Persist answer and evaluate if questionId is provided
+        String answerId = null;
+        Map<String, Object> evaluationResult = null;
+        boolean evaluated = false;
+
+        if (question != null) {
+            try {
+                // Pass transcript to Gemini answer evaluation
+                evaluationResult = answerEvaluator.evaluateAnswer(
+                        question.getQuestionText(),
+                        transcript,
+                        interview.getTargetRole(),
+                        interview.getExperienceLevel()
+                );
+                evaluated = true;
+            } catch (Exception ex) {
+                log.warn("Gemini evaluation failed during transcription workflow: {}. Persisting fallback.", ex.getMessage());
+            }
+
+            Answer savedAnswer;
+            if (evaluationResult != null) {
+                savedAnswer = persistAnswerAndFollowUp(interview, question, transcript, evaluationResult);
+            } else {
+                // Preserve transcript even if Gemini evaluation is temporarily unavailable
+                savedAnswer = persistTranscriptOnly(question, transcript);
+            }
+            answerId = savedAnswer.getId();
+        }
+
+        return TranscribeResponse.builder()
+                .transcript(transcript)
+                .answerId(answerId)
+                .questionId(questionId)
+                .sessionId(sessionId)
+                .detectedLanguage(result.languageCode())
+                .evaluated(evaluated)
+                .evaluation(evaluationResult)
+                .build();
+    }
+
+    @Transactional
+    public Answer persistTranscriptOnly(Question question, String transcript) {
+        if (answerRepository.findByQuestionId(question.getId()).isPresent()) {
+            throw new IllegalArgumentException("Answer already submitted for this question");
+        }
+        Answer answer = Answer.builder()
+                .question(question)
+                .answerText(transcript)
+                .score(null)
+                .correctnessScore(null)
+                .clarityScore(null)
+                .technicalDepthScore(null)
+                .feedback("Transcript saved. Evaluation pending.")
+                .build();
+        return answerRepository.save(answer);
     }
 
     @Transactional
