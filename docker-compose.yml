@@ -5,7 +5,7 @@ services:
     restart: always
     environment:
       MYSQL_DATABASE: intervAI
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-Root@7317}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
     networks:
       - internal-net
     volumes:
@@ -31,9 +31,10 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata
       SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: ${DB_ROOT_PASSWORD:-Root@7317}
-      JWT_SECRET: ${JWT_SECRET:-404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}
+      SPRING_DATASOURCE_PASSWORD: ${DB_ROOT_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
 
   frontend:
     build:
