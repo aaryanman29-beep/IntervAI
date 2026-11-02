@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080/api";
+export const API_URL = import.meta.env.VITE_API_URL || "https://intervai-1gzq.onrender.com/api";
 
 const getHeaders = (isFormData = false) => {
   const token = localStorage.getItem("token");
