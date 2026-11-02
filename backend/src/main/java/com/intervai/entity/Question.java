@@ -19,10 +19,12 @@ public class Question {
     @Column(length = 36, updatable = false, nullable = false)
     private String id;
 
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "user"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "interview_id", nullable = false)
     private Interview interview;
 
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "interview", "parentQuestion"})
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_question_id")
     private Question parentQuestion;

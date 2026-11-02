@@ -19,6 +19,7 @@ public class Answer {
     @Column(length = 36, updatable = false, nullable = false)
     private String id;
 
+    @com.fasterxml.jackson.annotation.JsonIgnoreProperties({"hibernateLazyInitializer", "handler", "interview"})
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false, unique = true)
     private Question question;
