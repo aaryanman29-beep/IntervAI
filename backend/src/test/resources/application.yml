@@ -26,11 +26,6 @@ intervai:
     api-key: test-gemini-key
     model: gemini-1.5-flash
 
-  elevenlabs:
-    api-key: test-elevenlabs-key
-    stt-model-id: scribe_v2
-
   storage:
     type: local
     upload-dir: target/test-uploads
-

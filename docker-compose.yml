@@ -34,7 +34,6 @@ services:
       SPRING_DATASOURCE_PASSWORD: ${DB_ROOT_PASSWORD}
       JWT_SECRET: ${JWT_SECRET}
       GEMINI_API_KEY: ${GEMINI_API_KEY:-}
-      ELEVENLABS_API_KEY: ${ELEVENLABS_API_KEY:-}
 
   frontend:
     build:

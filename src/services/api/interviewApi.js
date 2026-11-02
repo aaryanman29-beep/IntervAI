@@ -11,5 +11,4 @@ export const interviewApi = {
   start: (id) => apiClient.post(`/interviews/${id}/start`),
   submitAnswer: (id, data) => apiClient.post(`/interviews/${id}/answer`, data),
   complete: (id) => apiClient.post(`/interviews/${id}/complete`),
-  transcribeAudio: (formData) => apiClient.post("/interviews/transcribe", formData, true),
 };
