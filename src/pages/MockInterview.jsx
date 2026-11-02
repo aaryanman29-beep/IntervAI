@@ -59,7 +59,12 @@ export default function MockInterview() {
   const handleTranscriptionSuccess = async (transcribeData) => {
     if (!transcribeData?.transcript) return
     const newTranscript = transcribeData.transcript
-    setAnswer(newTranscript)
+    
+    // If the backend returns a local disclaimer fallback while the user already has real recognized speech, keep their real speech
+    const isFallbackPreview = newTranscript.includes("local transcription preview")
+    if (!isFallbackPreview || !baseAnswerRef.current?.trim()) {
+      setAnswer(newTranscript)
+    }
 
     // If backend already performed Gemini evaluation with question
     if (transcribeData.evaluation) {
@@ -225,7 +230,7 @@ export default function MockInterview() {
 
           {aiState === "idle" && !lastEvaluation && (
             <p className="mt-5 max-w-xs text-sm leading-6 text-muted">
-              When you are ready, type your response or use the microphone.
+              When you are ready, type your response or speak into the microphone.
             </p>
           )}
 
@@ -265,7 +270,7 @@ export default function MockInterview() {
               onChange={(e) => setAnswer(e.target.value)}
               rows="7"
               disabled={hasSubmittedCurrent || aiState === "submitting"}
-              placeholder="Type your response here, or use the microphone to record..."
+              placeholder="Type your response here, or click the microphone to speak..."
               className="mt-2 w-full resize-none rounded-2xl border border-line bg-slate-50 p-4 font-normal leading-6 outline-none transition focus:border-primary focus:bg-white disabled:cursor-not-allowed disabled:opacity-60"
             />
           </label>
@@ -276,6 +281,11 @@ export default function MockInterview() {
               questionId={currentQuestion?.id}
               disabled={hasSubmittedCurrent || aiState === "submitting"}
               apiTranscribeFn={interviewApi.transcribeAudio}
+              onLiveTranscript={(liveText) => {
+                if (liveText && liveText.trim()) {
+                  setAnswer(liveText)
+                }
+              }}
               onTranscriptionSuccess={handleTranscriptionSuccess}
             />
           </div>

@@ -4,10 +4,12 @@ import Button from "../common/Button"
 
 export default function RecordingControls({
   onTranscriptionSuccess,
+  onLiveTranscript,
   sessionId,
   questionId,
   disabled = false,
   apiTranscribeFn,
+  autoTranscribeOnStop = true,
 }) {
   const [permissionState, setPermissionState] = useState("prompt") // 'prompt', 'granted', 'denied', 'unsupported'
   const [recordingState, setRecordingState] = useState("idle") // 'idle', 'recording', 'stopped'
@@ -23,6 +25,7 @@ export default function RecordingControls({
   const timerRef = useRef(null)
   const audioChunksRef = useRef([])
   const audioElementRef = useRef(null)
+  const recognitionRef = useRef(null)
 
   // Check MediaRecorder browser support
   useEffect(() => {
@@ -32,10 +35,16 @@ export default function RecordingControls({
     }
   }, [])
 
-  // Clean up audio blob URL and media stream on unmount
+  // Clean up audio blob URL, media stream, and speech recognition on unmount
   useEffect(() => {
     return () => {
       cleanupStream()
+      if (recognitionRef.current) {
+        try {
+          recognitionRef.current.abort()
+        } catch (e) {}
+        recognitionRef.current = null
+      }
       if (audioUrl) {
         URL.revokeObjectURL(audioUrl)
       }
@@ -117,12 +126,47 @@ export default function RecordingControls({
         const url = URL.createObjectURL(blob)
         setAudioUrl(url)
         setRecordingState("stopped")
+
+        // Auto-transcribe on stop if enabled
+        if (autoTranscribeOnStop && apiTranscribeFn) {
+          submitBlobForTranscription(blob)
+        }
       }
 
       recorder.onerror = (e) => {
         console.error("MediaRecorder error:", e)
         setErrorMessage("An error occurred during audio recording.")
         stopRecording()
+      }
+
+      // Start browser native SpeechRecognition in parallel for real-time live transcription
+      const SpeechRecognitionClass = typeof window !== "undefined" && (window.SpeechRecognition || window.webkitSpeechRecognition)
+      if (SpeechRecognitionClass) {
+        try {
+          const recognition = new SpeechRecognitionClass()
+          recognition.continuous = true
+          recognition.interimResults = true
+          recognition.lang = "en-US"
+
+          recognition.onresult = (event) => {
+            let finalTranscript = ""
+            for (let i = 0; i < event.results.length; ++i) {
+              finalTranscript += event.results[i][0].transcript
+            }
+            if (finalTranscript && onLiveTranscript) {
+              onLiveTranscript(finalTranscript)
+            }
+          }
+
+          recognition.onerror = (e) => {
+            console.warn("Speech recognition event error:", e.error)
+          }
+
+          recognition.start()
+          recognitionRef.current = recognition
+        } catch (err) {
+          console.warn("SpeechRecognition initialization failed:", err)
+        }
       }
 
       recorder.start(250) // collect chunks every 250ms
@@ -150,6 +194,15 @@ export default function RecordingControls({
       timerRef.current = null
     }
 
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.stop()
+      } catch (err) {
+        console.warn("Failed to stop SpeechRecognition:", err)
+      }
+      recognitionRef.current = null
+    }
+
     if (mediaRecorderRef.current && mediaRecorderRef.current.state !== "inactive") {
       try {
         mediaRecorderRef.current.stop()
@@ -163,6 +216,12 @@ export default function RecordingControls({
     if (timerRef.current) {
       clearInterval(timerRef.current)
       timerRef.current = null
+    }
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.abort()
+      } catch (e) {}
+      recognitionRef.current = null
     }
     stopRecording()
     cleanupStream()
@@ -201,9 +260,10 @@ export default function RecordingControls({
     }
   }
 
-  const submitForTranscription = async () => {
-    if (!audioBlob || isTranscribing) return
-    if (audioBlob.size === 0) {
+  const submitBlobForTranscription = async (blobToSubmit) => {
+    const targetBlob = blobToSubmit || audioBlob
+    if (!targetBlob || isTranscribing) return
+    if (targetBlob.size === 0) {
       setErrorMessage("Cannot submit an empty recording.")
       return
     }
@@ -213,8 +273,8 @@ export default function RecordingControls({
 
     try {
       const formData = new FormData()
-      const ext = audioBlob.type.includes("wav") ? "wav" : audioBlob.type.includes("mp4") ? "mp4" : "webm"
-      formData.append("audio", audioBlob, `recording.${ext}`)
+      const ext = targetBlob.type.includes("wav") ? "wav" : targetBlob.type.includes("mp4") ? "mp4" : "webm"
+      formData.append("audio", targetBlob, `recording.${ext}`)
       formData.append("sessionId", sessionId)
       if (questionId) {
         formData.append("questionId", questionId)
@@ -224,8 +284,6 @@ export default function RecordingControls({
       if (onTranscriptionSuccess) {
         onTranscriptionSuccess(response)
       }
-      // Reset recording after successful transcription
-      discardRecording()
     } catch (err) {
       console.error("Transcription submission failed:", err)
       const errorMsg = err.message || err.data?.message || "Failed to transcribe audio. Please retry."
@@ -233,6 +291,10 @@ export default function RecordingControls({
     } finally {
       setIsTranscribing(false)
     }
+  }
+
+  const submitForTranscription = async () => {
+    await submitBlobForTranscription(audioBlob)
   }
 
   return (
@@ -289,7 +351,7 @@ export default function RecordingControls({
             >
               <Square className="size-5 fill-current" />
             </button>
-            <span className="text-xs text-muted">Click square to stop</span>
+            <span className="text-xs text-muted">Click square when finished speaking</span>
           </div>
         )}
 
@@ -340,7 +402,7 @@ export default function RecordingControls({
                 icon={isTranscribing ? Loader2 : Send}
                 className="flex-1 text-xs"
               >
-                {isTranscribing ? "Transcribing (Scribe)..." : "Transcribe Answer"}
+                {isTranscribing ? "Transcribing..." : "Transcribe Answer"}
               </Button>
             </div>
           </div>
@@ -371,7 +433,7 @@ export default function RecordingControls({
 
       {/* Subtext info */}
       <p className="mt-4 text-center text-[11px] text-muted leading-tight">
-        Powered by ElevenLabs Scribe STT. Audio is transcribed securely via backend and processed for evaluation.
+        Speak clearly into your microphone. Voice input is captured live in real time and processed for evaluation.
       </p>
     </div>
   )
