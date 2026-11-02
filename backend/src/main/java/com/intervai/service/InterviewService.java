@@ -124,8 +124,12 @@ public class InterviewService {
     @Transactional
     public Interview startInterview(String id, String userId) {
         Interview interview = getInterview(id, userId);
-        if (interview.getStatus() != InterviewStatus.CREATED) {
-            throw new IllegalArgumentException("Interview already started or completed");
+        if (interview.getStatus() == InterviewStatus.IN_PROGRESS) {
+            log.info("Interview {} is already IN_PROGRESS for user {}", id, userId);
+            return interview;
+        }
+        if (interview.getStatus() == InterviewStatus.COMPLETED) {
+            throw new IllegalArgumentException("Interview already completed");
         }
         interview.setStatus(InterviewStatus.IN_PROGRESS);
         return interviewRepository.save(interview);

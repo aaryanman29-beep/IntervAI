@@ -29,6 +29,10 @@ public class InterviewController {
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @Valid @RequestBody CreateInterviewRequest request) {
 
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Authentication required", "UNAUTHORIZED"));
+        }
+
         // Rate limit: max 5 interview creations per 10 minutes per user
         String rateKey = "create_interview:" + userDetails.getId();
         if (!rateLimiterService.tryAcquire(rateKey, 5, 600_000)) {
@@ -90,6 +94,9 @@ public class InterviewController {
     public ResponseEntity<ApiResponse<Interview>> startInterview(
             @AuthenticationPrincipal UserDetailsImpl userDetails,
             @PathVariable String id) {
+        if (userDetails == null) {
+            return ResponseEntity.status(401).body(ApiResponse.error("Authentication required", "UNAUTHORIZED"));
+        }
         Interview interview = interviewService.startInterview(id, userDetails.getId());
         return ResponseEntity.ok(ApiResponse.success(interview, "Interview started"));
     }
