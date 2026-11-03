@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Collections;
@@ -32,7 +33,8 @@ public class GeminiService {
             throw new IllegalStateException("Gemini API key is not configured. Please set the GEMINI_API_KEY environment variable.");
         }
 
-        String url = String.format("%s/%s:generateContent?key=%s", apiBaseUrl, model, apiKey);
+        String trimmedKey = apiKey.trim();
+        String url = String.format("%s/%s:generateContent?key=%s", apiBaseUrl, model, trimmedKey);
 
         Map<String, Object> requestBody = new HashMap<>();
         
@@ -58,6 +60,7 @@ public class GeminiService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("x-goog-api-key", trimmedKey);
 
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
@@ -72,9 +75,12 @@ public class GeminiService {
                     }
                 }
             }
+        } catch (HttpStatusCodeException hsce) {
+            log.error("Gemini API error (HTTP {}): {}", hsce.getStatusCode(), hsce.getResponseBodyAsString());
+            throw new RuntimeException("Gemini API error " + hsce.getStatusCode() + ": " + hsce.getResponseBodyAsString(), hsce);
         } catch (Exception e) {
             log.error("Failed to generate content from Gemini API: {}", e.getMessage());
-            throw new RuntimeException("AI processing failed", e);
+            throw new RuntimeException("AI processing failed: " + e.getMessage(), e);
         }
         
         throw new RuntimeException("Invalid response from AI provider");
