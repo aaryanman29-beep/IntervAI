@@ -121,8 +121,20 @@ class InterviewServiceTest {
     }
 
     @Test
-    void testStartInterview_AlreadyStarted_ThrowsException() {
+    void testStartInterview_AlreadyInProgress_ReturnsInterview() {
         sampleInterview.setStatus(InterviewStatus.IN_PROGRESS);
+        when(interviewRepository.findByIdAndUserId("interview-456", "user-123"))
+                .thenReturn(Optional.of(sampleInterview));
+
+        Interview started = interviewService.startInterview("interview-456", "user-123");
+
+        assertEquals(InterviewStatus.IN_PROGRESS, started.getStatus());
+        verify(interviewRepository, never()).save(any(Interview.class));
+    }
+
+    @Test
+    void testStartInterview_AlreadyCompleted_ThrowsException() {
+        sampleInterview.setStatus(InterviewStatus.COMPLETED);
         when(interviewRepository.findByIdAndUserId("interview-456", "user-123"))
                 .thenReturn(Optional.of(sampleInterview));
 
