@@ -1,5 +1,7 @@
 package com.intervai.service.ai;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,13 +22,14 @@ public class GeminiService {
     @Value("${intervai.gemini.api-key}")
     private String apiKey;
 
-    @Value("${intervai.gemini.model:gemini-1.5-flash}")
+    @Value("${intervai.gemini.model:gemini-3.5-flash}")
     private String model;
 
     @Value("${intervai.gemini.api-url:https://generativelanguage.googleapis.com/v1beta/models}")
     private String apiBaseUrl;
 
     private final RestTemplate restTemplate;
+    private final ObjectMapper objectMapper;
 
     public String generateContent(String systemInstruction, String userPrompt) {
         if (apiKey == null || apiKey.trim().isEmpty() || "mock_key".equalsIgnoreCase(apiKey)) {
@@ -65,13 +68,16 @@ public class GeminiService {
         HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
 
         try {
-            com.fasterxml.jackson.databind.JsonNode rootNode = restTemplate.postForObject(url, entity, com.fasterxml.jackson.databind.JsonNode.class);
-            if (rootNode != null && rootNode.has("candidates")) {
-                com.fasterxml.jackson.databind.JsonNode candidates = rootNode.get("candidates");
-                if (candidates.isArray() && !candidates.isEmpty()) {
-                    com.fasterxml.jackson.databind.JsonNode parts = candidates.get(0).path("content").path("parts");
-                    if (parts.isArray() && !parts.isEmpty()) {
-                        return parts.get(0).path("text").asText();
+            String responseStr = restTemplate.postForObject(url, entity, String.class);
+            if (responseStr != null) {
+                JsonNode rootNode = objectMapper.readTree(responseStr);
+                if (rootNode.has("candidates")) {
+                    JsonNode candidates = rootNode.get("candidates");
+                    if (candidates.isArray() && !candidates.isEmpty()) {
+                        JsonNode parts = candidates.get(0).path("content").path("parts");
+                        if (parts.isArray() && !parts.isEmpty()) {
+                            return parts.get(0).path("text").asText();
+                        }
                     }
                 }
             }
