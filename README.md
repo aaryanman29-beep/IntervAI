@@ -1,56 +1,52 @@
-# IntervAI · AI-Powered Mock Interview & Career Intelligence Platform
+# IntervAI
 
 <div align="center">
 
 ![IntervAI Banner](public/og-image.png)
 
-[![Frontend Build](https://img.shields.io/badge/Frontend-Vite%208%20%7C%20React%2019-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
-[![Backend Build](https://img.shields.io/badge/Backend-Spring%20Boot%204.1.1-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
-[![Runtime](https://img.shields.io/badge/Java-21%20LTS-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
-[![Styling](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![AI Engine](https://img.shields.io/badge/Google_Gemini-1.5_Flash-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
+[![Frontend](https://img.shields.io/badge/Frontend-React%2019%20%7C%20Vite%208-646CFF?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Backend](https://img.shields.io/badge/Backend-Spring%20Boot%204.1.1-6DB33F?logo=springboot&logoColor=white)](https://spring.io/projects/spring-boot)
+[![Java](https://img.shields.io/badge/Java-21%20LTS-ED8B00?logo=openjdk&logoColor=white)](https://openjdk.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4.0-38B2AC?logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
+[![AI](https://img.shields.io/badge/Google_Gemini-1.5_Flash-4285F4?logo=google&logoColor=white)](https://ai.google.dev/)
 [![Database](https://img.shields.io/badge/MySQL-9.0%20%2F%20H2-4479A1?logo=mysql&logoColor=white)](https://www.mysql.com/)
-[![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
 
-**An enterprise-grade, full-stack mock interview platform bridging the realism gap between static practice problems and high-pressure tech interview loops.**  
-_Featuring real-time in-browser speech recognition, multi-dimensional Gemini AI evaluation, adaptive dynamic follow-ups, ATS resume intelligence, and personalized learning roadmaps._
+**A full-stack, AI-powered mock interview and career intelligence platform.**  
+*Real-time in-browser speech recognition, multi-dimensional Gemini AI evaluation, adaptive follow-up questions, ATS resume analysis, and personalized learning roadmaps.*
 
-[Live Demo](#-quick-start-guide) · [System Architecture](#️-system-architecture) · [API Documentation](#-rest-api-reference) · [Security Architecture](#-security--privacy-architecture) · [Docker Deployment](#-docker--container-deployment)
+[Overview](#overview) · [Key Features](#key-features) · [Architecture](#project-architecture) · [Getting Started](#getting-started) · [API Docs](#api-documentation) · [Testing](#testing)
 
 </div>
 
 ---
 
-## 📑 Table of Contents
+## Table of Contents
 
-- [📌 Executive Overview](#-executive-overview)
-- [✨ Key Features](#-key-features)
-- [🏗️ System Architecture](#️-system-architecture)
-- [💻 Technology Stack](#-technology-stack)
-- [🗄️ Database Schema & Data Models](#️-database-schema--data-models)
-- [🔌 REST API Reference](#-rest-api-reference)
-- [🛡️ Security & Privacy Architecture](#️-security--privacy-architecture)
-- [🚀 Quick Start Guide](#-quick-start-guide)
-  - [Prerequisites](#prerequisites)
-  - [Backend Setup (Spring Boot)](#1-backend-setup-spring-boot)
-  - [Frontend Setup (React + Vite)](#2-frontend-setup-react--vite)
-- [🧪 Testing & Quality Assurance](#-testing--quality-assurance)
-- [🐳 Docker & Container Deployment](#-docker--container-deployment)
-- [☁️ Cloud Deployment Guides](#️-cloud-deployment-guides)
-- [📂 Project Directory Structure](#-project-directory-structure)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Screenshots / Demo](#screenshots--demo)
+- [Technology Stack](#technology-stack)
+- [Project Architecture](#project-architecture)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+- [Environment Variables](#environment-variables)
+- [API Documentation](#api-documentation)
+- [Testing](#testing)
+- [Contribution Guidelines](#contribution-guidelines)
+- [Roadmap](#roadmap)
+- [License](#license)
+- [Acknowledgements / Contact](#acknowledgements--contact)
 
 ---
 
-## 📌 Executive Overview
+## Overview
 
-Technical interview preparation today suffers from a fundamental **fidelity gap**: candidates practice algorithms on passive code editors or read static system design articles, but freeze during real interview loops where communication clarity, structured delivery, edge-case probing, and trade-off justification are tested under strict time constraints.
+Technical interview preparation often suffers from a **fidelity gap**: candidates practice algorithms on static code editors or read system design articles, but struggle during live interviews where communication clarity, structured delivery, edge-case probing, and trade-off justification are evaluated under time constraints.
 
-**IntervAI** solves this by providing a realistic, interactive interview simulation platform modeled after elite interview prep standards (Aced.io, Exponent, Interviewing.io).
+**IntervAI** bridges this gap with an interactive mock interview simulation platform built for software engineers, students, and job seekers preparing for technical, behavioral, and system design loops.
 
-### How IntervAI Works
+### How It Works
 
 ```mermaid
 sequenceDiagram
@@ -59,654 +55,453 @@ sequenceDiagram
     participant UI as React 19 Client
     participant API as Spring Boot API
     participant AI as Google Gemini 1.5
-    participant DB as MySQL Database
+    participant DB as MySQL / H2 Database
 
-    Candidate->>UI: Selects Track, Role, Experience & Uploads Resume
-    UI->>API: POST /api/interviews (Creates Session)
-    API->>AI: Generates Role-Tailored Questions from Resume Context
-    AI-->>API: Returns Structured Questions (Tech / Behavioral / System Design)
-    API->>DB: Persists Interview & Question Records
-    API-->>UI: Returns Interview Questions & Starts Timer
-    
-    Candidate->>UI: Speaks Answer (Web Speech API Zero-Latency Capture)
+    Candidate->>UI: Selects track, role, experience & uploads resume
+    UI->>API: POST /api/interviews
+    API->>AI: Generates role-tailored questions from resume context
+    AI-->>API: Returns structured questions
+    API->>DB: Persists interview & question records
+    API-->>UI: Returns interview questions & starts timer
+
+    Candidate->>UI: Speaks answer (Web Speech API)
     UI->>API: POST /api/interviews/{id}/answer
-    API->>AI: Prompts Gemini (Correctness, Clarity, Depth, Delivery)
-    AI-->>API: Returns Multi-Dimensional Score & Adaptive Follow-up
-    API->>DB: Persists Answer & Appends Dynamic Follow-up Question
-    API-->>UI: Displays Immediate Feedback & Next Follow-up
-    
-    Candidate->>UI: Completes All Questions
+    API->>AI: Evaluates correctness, clarity, depth & delivery
+    AI-->>API: Returns multi-dimensional score & follow-up
+    API->>DB: Persists answer & appends follow-up question
+    API-->>UI: Displays feedback & next question
+
+    Candidate->>UI: Completes all questions
     UI->>API: POST /api/interviews/{id}/complete
-    API->>DB: Aggregates Aggregate Scorecard & Weak Areas
-    API-->>UI: Returns Radar Analytics & Personalized Roadmap
+    API->>DB: Aggregates scorecard & weak areas
+    API-->>UI: Returns radar analytics & learning roadmap
 ```
 
 ---
 
-## ✨ Key Features
+## Key Features
 
-### 🎙️ Real-Time In-Browser Voice Streaming
-- Built directly on the native **HTML5 Web Speech API** (`SpeechRecognition` / `webkitSpeechRecognition`).
-- Real-time continuous speech-to-text streamed directly into candidate answer editors with instant visual waveforms and recording feedback.
-- **Zero audio API subscription costs or external quota dependencies**; private and executed client-side.
-- Robust state management with graceful fallback for browsers without native voice recognition.
+### Completed Features
 
-### 🤖 Adaptive Gemini Generative AI Evaluator
-- Evaluates responses across four core assessment dimensions:
-  - **Technical Correctness (0–100)**: Accuracy of concepts, algorithm invariants, time/space complexity, and architecture choices.
-  - **Communication Clarity (0–100)**: Articulation, concise phrasing, and structural cadence.
-  - **Technical Depth & Edge Cases (0–100)**: Handling of failure modes, boundary conditions, race conditions, and scaling bottlenecks.
-  - **Structured Delivery (0–100)**: Framework adherence (e.g., STAR technique for behavioral, requirement-gathering for system design).
-- **Dynamic Follow-Up Questions**: When a candidate skips an edge case or mentions a technical tradeoff, the AI dynamically appends an adaptive follow-up probe into the interview sequence.
-- **Fail-Safe Fallbacks**: Guaranteed response generation even in cases of external API rate limits or transient network disruptions.
+- **Real-Time In-Browser Voice Streaming**: Built on the native HTML5 Web Speech API (`SpeechRecognition` / `webkitSpeechRecognition`) for zero-latency, client-side speech-to-text with graceful fallback for unsupported browsers.
+- **Adaptive Gemini AI Evaluator**: Scores answers across four dimensions (Technical Correctness, Communication Clarity, Technical Depth & Edge Cases, and Structured Delivery) and dynamically appends follow-up probes.
+- **ATS Resume Intelligence**: Server-side PDF parsing via Apache PDFBox 3.0.2 with `%PDF` magic-byte validation, page caps, skill extraction, ATS compatibility scoring, and gap analysis.
+- **Personalized Learning Roadmaps**: Translates interview performance and weak areas into prioritized study paths (`HIGH`, `MEDIUM`, `LOW`) with progress tracking.
+- **Analytics & Scorecards**: Multi-axis Recharts radar charts, longitudinal score tracking, and detailed feedback cards.
+- **Multi-Track Question Bank**: Practice tracks covering Software Engineering, System Design, Algorithms, Behavioral (STAR), SQL, Machine Learning, and Engineering Leadership, with difficulty, company, and topic filters.
+- **Security & Privacy**: Dual-mode JWT authentication (`HttpOnly` cookies and `Authorization: Bearer`), sliding-window rate limiting, account lockout protection, prompt sanitization, IDOR ownership checks, and cookie consent with PII-redacted analytics.
 
-### 📄 ATS Resume Intelligence & Skill Extraction
-- Automated PDF resume parsing via **Apache PDFBox 3.0** with **magic-byte validation** (`%PDF`) and memory-gated execution.
-- Extracts candidate core competencies, framework proficiencies, and project experiences.
-- Calculates **ATS compatibility score**, highlights missing competencies, and diagnoses career weak points.
-- Automatically tailors interview questions directly to candidate experience history.
+### Planned Features
 
-### 🗺️ AI-Generated Personalized Learning Roadmaps
-- Translates aggregate interview performance and identified knowledge gaps into custom step-by-step study paths.
-- Categorizes topics by priority (*HIGH, MEDIUM, LOW*), estimated timeline, and curated technical resources.
-- Interactive tracking allows candidates to mark milestone completion and visualize progress.
-
-### 📊 Deep Analytics & Performance Scorecards
-- Multi-axis **Radar Charts** powered by Recharts visualizing technical, communication, and problem-solving metrics.
-- Longitudinal tracking across interview attempts to measure score velocity over time.
-- Actionable feedback cards highlighting strengths, red flags, and comprehensive model reference answers.
-
-### 🎯 Multi-Track Curated Question Bank
-- Diverse practice tracks: **Software Engineering, System Design, Algorithms, Behavioral (STAR), SQL, Machine Learning, and Engineering Leadership**.
-- Filterable by difficulty (*Easy, Medium, Hard*), company style (*Google, Amazon, Meta, Netflix*), and topic tags.
-- Full bookmarking support and question detail view with practice sandbox.
-
-### ✨ Premium Micro-Interactions & Modern UI
-- Modern, clean aesthetic built with **Tailwind CSS v4** and modern CSS variables.
-- Perspective 3D word rotator animated headline cycling through practice disciplines.
-- Seamless, GPU-accelerated infinite social proof marquee with hover-to-pause and edge fade masks.
-- Ambient pulsing glows, accessible focus indicators, and fully responsive layout across desktop, tablet, and mobile.
+- Additional interactive interview modes and expanded question bank coverage (see [Roadmap](#roadmap)).
 
 ---
 
-## 🏗️ System Architecture
+## Screenshots / Demo
 
-IntervAI adopts a clean, decoupled architecture separating high-speed client presentation, stateless business orchestration, and external generative inference:
+![IntervAI Platform Banner](public/og-image.png)
+
+> A live hosted demo URL is not configured in this repository. Follow [Getting Started](#getting-started) to run the full stack locally.
+
+---
+
+## Technology Stack
+
+### Frontend
+- **React** `19.0.0` — UI rendering and state management
+- **Vite** `8.0.5` — ESM dev server and production bundler
+- **React Router** `7.9.6` — Client-side routing
+- **Tailwind CSS** `4.0.0` (`@tailwindcss/vite`) — Utility-first styling
+- **Lucide React** `1.50.0` — Vector iconography
+- **Recharts** `3.10.1` — Radar charts and performance visualizations
+
+### Backend
+- **Spring Boot** `4.1.1` (Java `21 LTS`) — REST API and dependency injection
+- **Apache HttpClient 5** — External HTTP client for Gemini API calls
+- **Apache PDFBox** `3.0.2` — Server-side PDF resume text extraction
+- **Lombok** `1.18.38` — Boilerplate reduction
+
+### Database
+- **MySQL** `9.0` — Production relational database
+- **H2** `2.4` — Embedded database for local development and tests
+- **Spring Data JPA / Hibernate** — ORM and repository layer
+- **Flyway** — Version-controlled SQL migrations (`backend/src/main/resources/db/migration/`)
+
+### AI / Machine Learning
+- **Google Gemini 1.5 Flash** (`gemini-1.5-flash`) — Question generation, answer evaluation, resume analysis, and roadmap synthesis
+
+### Authentication & Security
+- **Spring Security** — Stateless filter chain, CORS, CSP, and HSTS headers
+- **JJWT** `0.11.5` — HMAC-SHA256 JWT signing and verification
+
+### Infrastructure / Deployment
+- **Docker & Docker Compose** — Multi-stage container builds (`Dockerfile`, `backend/Dockerfile`, `docker-compose.yml`)
+- **Nginx** — Static SPA serving and `/api` reverse proxy
+- **Render / Netlify / Vercel** — Deployment configs (`render.yaml`, `netlify.toml`, `vercel.json`)
+
+### Testing and Development Tools
+- **Vitest** `5.0.5` + **Testing Library** (`@testing-library/react` `16.3.3`, `jsdom` `30.1.3`) — Frontend unit and integration tests
+- **JUnit 5 + Mockito + MockMvc** — Backend unit and integration tests
+- **oxfmt** `0.2.0` — Frontend code formatting
+- **TypeScript** `5.7.0` — Type checking
+
+---
+
+## Project Architecture
+
+IntervAI decouples the React SPA client from the Spring Boot API, isolating external Gemini AI calls from database transactions so HikariCP connections are never held open during LLM inference.
 
 ```mermaid
 graph TB
     subgraph ClientLayer ["Client Layer (Browser)"]
         SPA["React 19 SPA (Vite 8)"]
-        WebSpeech["Web Speech API<br/>(Voice Recognition)"]
+        WebSpeech["Web Speech API"]
         Router["React Router v7"]
-        Tailwind["Tailwind CSS v4 & Lucide"]
     end
 
     subgraph SecurityGateway ["Security & Access Layer"]
         CORS["CORS Filter"]
-        JWTFilter["JwtAuthenticationFilter<br/>(HttpOnly Cookie / Bearer)"]
-        RateLimit["RateLimiterService<br/>(Sliding Window Token Bucket)"]
-        Lockout["AccountLockoutService<br/>(Brute-Force Shield)"]
+        JWTFilter["JwtAuthenticationFilter"]
+        RateLimit["RateLimiterService"]
+        Lockout["AccountLockoutService"]
     end
 
-    subgraph BackendLayer ["Spring Boot 4.1.1 Application Layer"]
-        AuthCtrl["AuthController (/api/auth)"]
-        IntCtrl["InterviewController (/api/interviews)"]
-        ResumeCtrl["ResumeController (/api/resumes)"]
-        DashCtrl["DashboardController (/api/dashboard)"]
-        UserCtrl["UserController (/api/users)"]
-        ContactCtrl["ContactController (/api/contact)"]
-        HealthCtrl["HealthController (/api/health)"]
-
-        IntSvc["InterviewService"]
-        ResumeSvc["ResumeService"]
-        RoadmapSvc["RoadmapService"]
-        UserSvc["UserService"]
-        Sanitizer["PromptSanitizer"]
+    subgraph BackendLayer ["Spring Boot 4.1.1 Application"]
+        Controllers["REST Controllers (/api/*)"]
+        Services["Business Services & PromptSanitizer"]
     end
 
     subgraph AIServiceLayer ["Generative AI Layer"]
         GeminiSvc["GeminiService (HttpClient 5)"]
-        Evaluator["AnswerEvaluator"]
-        QGen["QuestionGenerator"]
-        RAnalyzer["ResumeAnalyzer"]
-        RGen["RoadmapGenerator"]
-        GeminiAPI[("Google Gemini 1.5 Flash API")]
+        GeminiAPI[("Google Gemini 1.5 Flash")]
     end
 
     subgraph DataLayer ["Persistence Layer"]
-        Flyway["Flyway Database Migration"]
-        HikariCP["HikariCP Connection Pool"]
+        Flyway["Flyway Migrations"]
         JPA["Spring Data JPA / Hibernate"]
-        MySQL[("MySQL 9.0 Database<br/>(Docker / AWS RDS)")]
-        H2[("H2 Database<br/>(Dev / In-Memory Tests)")]
+        MySQL[("MySQL 9.0 (Prod)")]
+        H2[("H2 (Dev / Test)")]
     end
 
-    SPA -->|HTTPS / REST API| SecurityGateway
-    WebSpeech -.->|Speech-to-Text String| SPA
-    
+    SPA -->|HTTPS / REST| SecurityGateway
+    WebSpeech -.->|Transcript| SPA
     SecurityGateway --> BackendLayer
-    
     BackendLayer --> AIServiceLayer
     AIServiceLayer --> GeminiAPI
-    
     BackendLayer --> DataLayer
 ```
 
-### Architectural Highlights
-
-1. **Isolation of AI Inference from DB Transactions**: Long-running external AI calls (Gemini 1.5 Flash latency 500ms–2000ms) are executed **strictly outside** `@Transactional` boundaries. Database transactions remain atomic and sub-5ms, completely preventing HikariCP pool exhaustion under high concurrency.
-2. **Stateless Multi-Layer Authentication**: Supports dual authentication modalities:
-   - **HttpOnly, SameSite=Lax Cookies** for maximum protection against Cross-Site Scripting (XSS).
-   - **Authorization Bearer JWT Tokens** for programmatic REST and mobile API consumers.
-3. **Defense-in-Depth AI Prompt Sandboxing**: Candidate inputs are sanitized via regex and wrapped with explicit XML/delimiter delimiters (`<<<USER_ANSWER>>>`). The system prompt instructs Gemini to ignore candidate command overrides, neutralizing prompt injection attacks.
-4. **Resilient Memory Management**: PDF uploads are throttled through a 8-permit concurrency semaphore, capped at 10 pages, and validated for `%PDF` magic bytes to shield JVM heaps against PDF decompression bombs.
-
 ---
 
-## 💻 Technology Stack
+## Project Structure
 
-| Layer | Technology | Version | Purpose |
-|---|---|---|---|
-| **Frontend Framework** | [React](https://react.dev/) | `19.0.0` | Declarative UI rendering & state management |
-| **Build Tooling** | [Vite](https://vitejs.dev/) | `8.0.5` | Lightning-fast ESM dev server and optimized rollups |
-| **Routing** | [React Router](https://reactrouter.com/) | `7.9.6` | Client-side routing with lazy-loaded route chunks |
-| **Styling** | [Tailwind CSS](https://tailwindcss.com/) | `4.0.0` | Modern, utility-first CSS styling via `@tailwindcss/vite` |
-| **UI Components** | [Lucide React](https://lucide.dev/) | `1.50.0` | Accessible, unified vector iconography |
-| **Data Visualization** | [Recharts](https://recharts.org/) | `3.10.1` | Responsive radar charts and performance graphs |
-| **Frontend Testing** | [Vitest](https://vitest.dev/) + [Testing Library](https://testing-library.com/) | `5.0.5` / `16.3.3` | JSDOM unit and integration testing suite |
-| **Backend Framework** | [Spring Boot](https://spring.io/projects/spring-boot) | `4.1.1` | Production-grade REST backend and DI container |
-| **Runtime** | [Java OpenJDK](https://openjdk.org/) | `21 LTS` | Virtual threads, modern pattern matching, and performance |
-| **Security** | [Spring Security](https://spring.io/projects/spring-security) | `7.x` | Stateless JWT authentication, CORS, CSP, and HSTS filters |
-| **JWT Library** | [JJWT](https://github.com/jwtk/jjwt) | `0.11.5` | Cryptographically signed HMAC-SHA256 JWT tokens |
-| **PDF Processing** | [Apache PDFBox](https://pdfbox.apache.org/) | `3.0.2` | Resilient, server-side PDF text extraction |
-| **Database Migrations** | [Flyway](https://flywaydb.org/) | `10.x` | Version-controlled, idempotent SQL schema migrations |
-| **Persistence** | [Spring Data JPA](https://spring.io/projects/spring-data-jpa) / Hibernate | `7.4.5` | Object-relational mapping and repository abstraction |
-| **Database** | [MySQL](https://www.mysql.com/) / [H2](https://www.h2database.com/) | `9.0` / `2.4` | Relational storage for prod (MySQL) and dev/tests (H2) |
-| **AI LLM** | [Google Gemini 1.5 Flash](https://ai.google.dev/) | `gemini-1.5-flash` | Generative evaluation, question synthesis, and roadmaps |
-| **Containerization** | [Docker](https://www.docker.com/) & Docker Compose | Multi-Stage | Zero-dependency container orchestration |
-
----
-
-## 🗄️ Database Schema & Data Models
-
-Database versioning is managed through Flyway (`backend/src/main/resources/db/migration/`).
-
-```mermaid
-erDiagram
-    USERS ||--o{ RESUMES : owns
-    USERS ||--o{ INTERVIEWS : conducts
-    USERS ||--o{ LEARNING_ROADMAPS : follows
-    RESUMES ||--o| RESUME_ANALYSES : analyzes
-    INTERVIEWS ||--o{ QUESTIONS : contains
-    INTERVIEWS }o--o| RESUMES : references
-    QUESTIONS ||--o{ QUESTIONS : parent_of
-    QUESTIONS ||--o| ANSWERS : receives
-
-    USERS {
-        varchar(36) id PK
-        varchar(255) name
-        varchar(255) email UK
-        varchar(255) password_hash
-        varchar(50) role
-        varchar(100) target_role
-        varchar(50) experience_level
-        timestamp created_at
-    }
-
-    RESUMES {
-        varchar(36) id PK
-        varchar(36) user_id FK
-        varchar(255) original_filename
-        varchar(512) file_path
-        bigint size_bytes
-        longtext extracted_text
-        timestamp created_at
-    }
-
-    RESUME_ANALYSES {
-        varchar(36) id PK
-        varchar(36) resume_id FK
-        int ats_score
-        json skills
-        json missing_skills
-        json weak_areas
-        json suggestions
-        json recommended_topics
-        timestamp created_at
-    }
-
-    INTERVIEWS {
-        varchar(36) id PK
-        varchar(36) user_id FK
-        varchar(36) resume_id FK
-        varchar(255) target_role
-        varchar(50) experience_level
-        varchar(50) interview_type
-        varchar(255) company
-        varchar(50) status
-        int overall_score
-        int technical_score
-        int hr_score
-        int communication_score
-        json strengths
-        json weak_areas
-        timestamp created_at
-    }
-
-    QUESTIONS {
-        varchar(36) id PK
-        varchar(36) interview_id FK
-        varchar(36) parent_question_id FK
-        text question_text
-        varchar(50) question_type
-        varchar(50) difficulty
-        varchar(255) topic
-        int question_order
-        boolean is_follow_up
-        timestamp created_at
-    }
-
-    ANSWERS {
-        varchar(36) id PK
-        varchar(36) question_id FK
-        text answer_text
-        int score
-        int correctness_score
-        int clarity_score
-        int technical_depth_score
-        json strengths
-        json weaknesses
-        text feedback
-        timestamp created_at
-    }
-
-    LEARNING_ROADMAPS {
-        varchar(36) id PK
-        varchar(36) user_id FK
-        varchar(255) topic
-        varchar(50) priority
-        text description
-        varchar(50) status
-        int progress
-        json recommended_resources
-        timestamp created_at
-    }
+```text
+IntervAI/
+├── backend/                                # Spring Boot 4.1.1 (Java 21) API
+│   ├── .mvn/                               # Maven wrapper
+│   ├── Dockerfile                          # Multi-stage JRE 21 Alpine image
+│   ├── pom.xml                             # Maven dependencies
+│   └── src/
+│       ├── main/
+│       │   ├── java/com/intervai/
+│       │   │   ├── config/                 # SecurityConfig, AsyncConfig, HttpClientConfig
+│       │   │   ├── controller/             # Auth, Interview, Resume, Dashboard, User, Contact, Health
+│       │   │   ├── dto/                    # Request/Response DTOs
+│       │   │   ├── entity/                 # JPA entities (User, Interview, Question, Answer, etc.)
+│       │   │   ├── exception/              # GlobalExceptionHandler & custom exceptions
+│       │   │   ├── repository/             # Spring Data JPA repositories
+│       │   │   ├── security/               # JwtUtil, RateLimiterService, LockoutService
+│       │   │   └── service/                # Business logic & AI delegates
+│       │   └── resources/
+│       │       ├── application.yml         # Shared config
+│       │       ├── application-dev.yml     # Dev profile (H2)
+│       │       ├── application-prod.yml    # Prod profile (MySQL)
+│       │       └── db/migration/           # Flyway SQL migrations
+│       └── test/java/com/intervai/         # JUnit 5 & MockMvc test suite
+├── public/                                 # Static assets, manifest, og-image.png, _headers
+├── src/                                    # React 19 frontend
+│   ├── __tests__/                          # Vitest & Testing Library suites
+│   ├── assets/                             # Images and branding assets
+│   ├── components/                         # UI components (common, dashboard, feedback, interview, layout, questions)
+│   ├── contexts/                           # AuthContext, ToastContext
+│   ├── hooks/                              # Custom React hooks
+│   ├── pages/                              # Route page components
+│   ├── services/api/                       # API client modules
+│   ├── utils/                              # Analytics, formatters, constants
+│   ├── App.jsx                             # Route definitions
+│   ├── index.css                           # Tailwind CSS v4 entrypoint
+│   └── main.jsx                            # React root mount
+├── docs/                                   # Project documentation & audit reports
+├── docker-compose.yml                      # Full-stack container orchestration
+├── Dockerfile                              # Frontend Nginx multi-stage build
+├── netlify.toml                            # Netlify SPA config
+├── package.json                            # Frontend scripts & dependencies
+├── render.yaml                             # Render blueprint
+├── vercel.json                             # Vercel SPA rewrites
+└── vite.config.ts                          # Vite 8 configuration
 ```
 
 ---
 
-## 🔌 REST API Reference
-
-All successful responses adhere to the standard JSON payload structure:
-```json
-{
-  "success": true,
-  "data": { ... },
-  "message": "Operation completed successfully"
-}
-```
-
-### 1. Authentication (`/api/auth`)
-
-| Method | Endpoint | Access | Description | Rate Limit |
-|---|---|---|---|---|
-| `POST` | `/api/auth/register` | Public | Registers a new user account and sets auth cookie | 3 req / 10 min / IP |
-| `POST` | `/api/auth/login` | Public | Authenticates credentials and returns JWT token | 5 req / 1 min / IP |
-| `POST` | `/api/auth/logout` | Public | Clears authenticated session cookies | Unrestricted |
-| `GET` | `/api/auth/me` | Authenticated | Fetches profile of current authenticated user | Unrestricted |
-
-### 2. Interview Management (`/api/interviews`)
-
-| Method | Endpoint | Access | Description | Rate Limit |
-|---|---|---|---|---|
-| `POST` | `/api/interviews` | Authenticated | Creates a new mock interview session with AI questions | 5 sessions / 10 min |
-| `GET` | `/api/interviews` | Authenticated | Retrieves past interviews for current user | Unrestricted |
-| `GET` | `/api/interviews/{id}` | Authenticated | Retrieves interview metadata and session state | Unrestricted |
-| `GET` | `/api/interviews/{id}/questions` | Authenticated | Fetches ordered questions for the session | Unrestricted |
-| `GET` | `/api/interviews/{id}/answers` | Authenticated | Fetches candidate answers and evaluation results | Unrestricted |
-| `POST` | `/api/interviews/{id}/start` | Authenticated | Transitions session to `IN_PROGRESS` (idempotent) | Unrestricted |
-| `POST` | `/api/interviews/{id}/answer` | Authenticated | Submits answer, evaluates via Gemini, returns feedback | 1 req / 3 sec |
-| `POST` | `/api/interviews/{id}/complete` | Authenticated | Computes overall scorecards and finalizes session | Unrestricted |
-| `GET` | `/api/interviews/questions` | Authenticated | Fetches all candidate's past interview questions | Unrestricted |
-| `GET` | `/api/interviews/questions/{qid}` | Authenticated | Fetches individual question details | Unrestricted |
-
-### 3. Resume & ATS Intelligence (`/api/resumes`)
-
-| Method | Endpoint | Access | Description | Rate Limit |
-|---|---|---|---|---|
-| `POST` | `/api/resumes/upload` | Authenticated | Uploads PDF resume (validates magic bytes, max 5/user) | 5 uploads / 10 min |
-| `GET` | `/api/resumes` | Authenticated | Lists all uploaded resumes for user | Unrestricted |
-| `GET` | `/api/resumes/{id}` | Authenticated | Fetches resume metadata and extracted text | Unrestricted |
-| `POST` | `/api/resumes/{id}/analyze` | Authenticated | Performs Gemini ATS analysis, extracts skills & gaps | 5 analyses / 10 min |
-
-### 4. Dashboard & Learning Roadmaps (`/api/dashboard`)
-
-| Method | Endpoint | Access | Description | Rate Limit |
-|---|---|---|---|---|
-| `GET` | `/api/dashboard` | Authenticated | Computes aggregated candidate KPIs and metrics | Unrestricted |
-| `GET` | `/api/dashboard/roadmap` | Authenticated | Retrieves current customized learning roadmap | Unrestricted |
-| `POST` | `/api/dashboard/roadmap/generate` | Authenticated | Synthesizes new AI roadmap tailored to weak points | 3 gens / 5 min |
-
-### 5. User Profile & System (`/api/users`, `/api`)
-
-| Method | Endpoint | Access | Description |
-|---|---|---|---|
-| `GET` | `/api/users/profile` | Authenticated | Retrieves user target role and experience profile |
-| `PUT` | `/api/users/profile` | Authenticated | Updates candidate career goals and level |
-| `POST` | `/api/contact` | Public | Submits inquiries (with domain validation) |
-| `GET` | `/api/health` | Public | Liveness & readiness probe checking DB connectivity |
-| `GET` | `/actuator/health` | Public | Spring Boot actuator system health status |
-
----
-
-## 🛡️ Security & Privacy Architecture
-
-IntervAI is engineered with defense-in-depth principles across all architectural tiers:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                   Multi-Pillar Security Architecture                   │
-├───────────────────┬───────────────────┬────────────────────────────────┤
-│ 1. Zero Client    │ 2. Sliding-Window │ 3. Account Lockout Protection │
-│    Secrets        │    Rate Limiting  │    • 5 consecutive failed      │
-│ • No API keys in  │ • Auth IP buckets │      logins triggers 15-min    │
-│   client bundle   │ • User action     │      lockout window            │
-│ • Gemini & JWT    │   throttles       │ • Automatic lockout reset      │
-│   keys server-only│ • Prompt spam cap │   on successful auth           │
-├───────────────────┼───────────────────┼────────────────────────────────┤
-│ 4. Prompt         │ 5. Safe File      │ 6. Hardened HTTP Headers       │
-│    Sanitization   │    Processing     │ • HSTS (max-age=31536000)      │
-│ • Delimiter walls │ • Magic bytes     │ • CSP & Frame-Ancestors 'self' │
-│ • System prompt   │ • Max 10-page cap │ • X-Content-Type-Options:      │
-│   override guards │ • Semaphore queue │   nosniff                      │
-└───────────────────┴───────────────────┴────────────────────────────────┘
-```
-
-1. **Zero Client Secrets**: The frontend bundle contains zero third-party API credentials (`GEMINI_API_KEY`, database credentials, or JWT signing keys). All generative AI and database calls are mediated by the Spring Boot backend.
-2. **Dual-Layer Sliding Window Rate Limiting**: Implemented via in-memory token-bucket semantics:
-   - Login: 5 requests / minute / IP
-   - Registration: 3 requests / 10 minutes / IP
-   - Interview Creation: 5 sessions / 10 minutes / User
-   - Answer Evaluation: 1 submission / 3 seconds / User
-   - Roadmap Generation: 3 requests / 5 minutes / User
-3. **Multi-Tenant Data Ownership Verification**: Every query accessing an interview, question, answer, or resume strictly validates `userId == authenticatedPrincipal.id`, preventing Insecure Direct Object Reference (IDOR) attacks.
-4. **Input Sanitization & Jakarta Validation**: All incoming requests pass strict bean validation constraints (`@Valid`, `@Email`, `@NotBlank`, `@Size`, `@Pattern`).
-5. **GDPR / Privacy Compliance**: Built-in cookie consent banner with analytics event tracking that automatically redacts passwords, tokens, and PII before dispatching events.
-
----
-
-## 🚀 Quick Start Guide
+## Getting Started
 
 ### Prerequisites
 
-Ensure you have the following installed locally:
-- **Node.js**: `v20.x` or `v22.x` (with `npm` or `pnpm`)
-- **Java**: OpenJDK `21 LTS`
-- **Maven**: (Wrapper `./mvnw` is bundled with repository)
-- **MySQL**: `8.0` or `9.0` (or use internal H2 mode for rapid local dev)
-- **Google Gemini API Key**: Obtain from [Google AI Studio](https://aistudio.google.com/)
+- **Node.js** `22.x` (see `.mise.toml`) and **pnpm** `10.34.3` (or `npm`)
+- **Java** `21 LTS`
+- **Maven** (bundled via `./mvnw` / `.\mvnw.cmd`)
+- **MySQL** `8.0` or `9.0` (optional for local dev; `application-dev.yml` uses embedded H2)
+- **Google Gemini API Key** from [Google AI Studio](https://aistudio.google.com/)
 
----
+### 1. Clone the Repository
 
-### 1. Backend Setup (Spring Boot)
+```bash
+git clone https://github.com/AdityaP116/IntervAI.git
+cd IntervAI
+```
 
-#### Option A: Quick Dev Mode with In-Memory / File Database (Zero MySQL Setup)
-The development profile (`application-dev.yml`) runs out-of-the-box using embedded H2:
+### 2. Backend Setup (Spring Boot)
+
+#### Option A: Local Dev Mode (Embedded H2)
 
 ```bash
 cd backend
 
-# On Linux / macOS:
+# Linux / macOS
 ./mvnw clean spring-boot:run
 
-# On Windows PowerShell:
+# Windows PowerShell
 .\mvnw.cmd clean spring-boot:run
 ```
 
-#### Option B: Production MySQL Setup
+#### Option B: Production Mode (MySQL)
 
-1. Create a MySQL database:
+1. Create the MySQL database:
    ```sql
    CREATE DATABASE intervAI CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
    ```
-
-2. Export environment variables:
-   ```bash
-   # Linux / macOS
-   export SPRING_PROFILES_ACTIVE=prod
-   export SPRING_DATASOURCE_URL="jdbc:mysql://localhost:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata"
-   export SPRING_DATASOURCE_USERNAME="root"
-   export SPRING_DATASOURCE_PASSWORD="YourSecurePassword"
-   export JWT_SECRET="your-256-bit-hex-secret-key-at-least-64-characters-long"
-   export GEMINI_API_KEY="your-gemini-api-key"
-
-   # Windows PowerShell
-   $env:SPRING_PROFILES_ACTIVE="prod"
-   $env:SPRING_DATASOURCE_URL="jdbc:mysql://localhost:3306/intervAI?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Kolkata"
-   $env:SPRING_DATASOURCE_USERNAME="root"
-   $env:SPRING_DATASOURCE_PASSWORD="YourSecurePassword"
-   $env:JWT_SECRET="your-256-bit-hex-secret-key-at-least-64-characters-long"
-   $env:GEMINI_API_KEY="your-gemini-api-key"
-   ```
-
-3. Run the backend:
+2. Set the required [Environment Variables](#environment-variables) (`SPRING_PROFILES_ACTIVE=prod`, `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD`, `JWT_SECRET`, `GEMINI_API_KEY`).
+3. Start the backend:
    ```bash
    cd backend
    ./mvnw clean spring-boot:run
    ```
 
-Backend will be running at **`http://localhost:8080`**. Verify with:
+Verify the backend is running at `http://localhost:8080`:
+
 ```bash
 curl http://localhost:8080/api/health
 ```
 
----
+### 3. Frontend Setup (React + Vite)
 
-### 2. Frontend Setup (React + Vite)
-
-1. From the project root, install dependencies:
-   ```bash
-   npm install
-   # or with pnpm:
-   pnpm install
-   ```
-
-2. Configure environment file (`.env` or `.env.local`):
-   ```env
-   VITE_API_URL=http://localhost:8080/api
-   ```
-
-3. Start the Vite development server:
-   ```bash
-   npm run dev
-   ```
-
-Frontend will be running at **`http://localhost:5173`** (or configured port). Open in Chrome or Edge for full Web Speech recognition support!
-
----
-
-## 🧪 Testing & Quality Assurance
-
-Both frontend and backend suites are automated and fully configured:
-
-### Frontend Unit & Integration Tests (Vitest)
-Executes 13 unit and integration tests across speech controls, cookie banner, analytics redaction, and contact flows:
 ```bash
-# Run tests once
-npm test
+# Install dependencies (from repository root)
+pnpm install
+# or: npm install
 
-# Run tests in watch mode
-npx vitest
+# Start the development server
+pnpm dev
+# or: npm run dev
 ```
 
-### Backend Unit & Integration Tests (JUnit 5 + MockMvc)
-Executes 19 comprehensive unit and integration tests covering security filters, controllers, service business logic, and database schemas:
-```bash
-cd backend
-./mvnw test
+Create a `.env` or `.env.local` file in the root if you need to override the default API URL:
+
+```env
+VITE_API_URL=http://localhost:8080/api
 ```
 
-### Production Build Verification
+### 4. Production Build
+
 ```bash
 # Frontend production bundle
-npm run build
+pnpm build
 
 # Backend executable JAR
 cd backend
 ./mvnw clean package -DskipTests
 ```
 
----
+### 5. Docker Compose
 
-## 🐳 Docker & Container Deployment
+Create a `.env` file in the repository root using placeholders:
 
-A turnkey containerized deployment is provided with **Docker Compose**, running an isolated bridge network, persistent MySQL volume, health checks, and an Nginx reverse proxy.
-
-### 1. Configure Docker Environment
-
-Create `.env` in the root directory:
 ```env
-DB_ROOT_PASSWORD=SuperSecretPassword123!
-JWT_SECRET=059c84355be226b4a252be8a782179a6847e8407cefa472ee1601453a0c96c7a
-GEMINI_API_KEY=your-gemini-api-key
+DB_ROOT_PASSWORD=<your-mysql-root-password>
+JWT_SECRET=<your-256-bit-hex-secret>
+GEMINI_API_KEY=<your-gemini-api-key>
 ```
 
-### 2. Launch Stack
+Launch the stack:
 
 ```bash
 docker compose up -d --build
-```
-
-### 3. Verify Running Services
-
-```bash
 docker compose ps
 ```
 
 | Service | Container | Internal Port | Exposed Port | Description |
 |---|---|---|---|---|
-| `db` | `intervai-mysql` | `3306` | None (Isolated) | MySQL 9.0 Database |
-| `backend` | `intervai-backend` | `8080` | `8080` | Spring Boot 4.1.1 API |
-| `frontend` | `intervai-frontend` | `80` | `80` | Nginx SPA + API Reverse Proxy |
+| `db` | `intervai-mysql` | `3306` | None (internal network) | MySQL 9.0 database |
+| `backend` | `intervai-backend` | `8080` | None (internal/public bridge) | Spring Boot 4.1.1 API |
+| `frontend` | `intervai-frontend` | `80` | `80` | Nginx SPA & API reverse proxy |
 
-Navigate to `http://localhost` to interact with the full application!
+Open `http://localhost` in your browser.
 
 ---
 
-## ☁️ Cloud Deployment Guides
+## Environment Variables
 
-### Deploy Backend to Render (`render.yaml`)
-A ready-to-use Render Blueprint is included in `render.yaml`.
-1. Link your GitHub repository in the [Render Dashboard](https://dashboard.render.com/).
-2. Select **Blueprint** and point to `render.yaml`.
-3. Configure the required environment variables:
-   - `SPRING_DATASOURCE_URL`, `SPRING_DATASOURCE_USERNAME`, `SPRING_DATASOURCE_PASSWORD` (from your Cloud MySQL instance like Aiven, AWS RDS, or PlanetScale)
-   - `JWT_SECRET`
-   - `GEMINI_API_KEY`
-   - `CORS_ALLOWED_ORIGINS` (e.g. `https://your-app.netlify.app`)
+| Variable | Purpose | Required |
+|---|---|---|
+| `SPRING_PROFILES_ACTIVE` | Active Spring profile (`dev` or `prod`) | No (defaults to `dev`) |
+| `SPRING_DATASOURCE_URL` | JDBC connection URL for MySQL in `prod` | Yes (in `prod`) |
+| `SPRING_DATASOURCE_USERNAME` | MySQL database username | Yes (in `prod`) |
+| `SPRING_DATASOURCE_PASSWORD` | MySQL database password | Yes (in `prod`) |
+| `JWT_SECRET` | HMAC-SHA256 signing secret (at least 64 hex chars) | Yes (in `prod` / Docker) |
+| `GEMINI_API_KEY` | Google Gemini API key for AI evaluation | Yes (for live AI features) |
+| `CORS_ALLOWED_ORIGINS` | Comma-separated allowed frontend origins | No |
+| `DB_ROOT_PASSWORD` | MySQL root password for `docker-compose.yml` | Yes (for Docker Compose) |
+| `VITE_API_URL` | Backend API base URL for the Vite frontend | No (defaults to local proxy/API) |
 
-### Deploy Frontend to Netlify (`netlify.toml`)
-1. Create a new site from Git on Netlify.
-2. Build command: `npm run build`
-3. Publish directory: `dist`
-4. Set Environment Variable:
-   - `VITE_API_URL`: URL of your deployed Spring Boot API (e.g. `https://intervai-api.onrender.com/api`)
+---
 
-### Deploy Frontend to Vercel (`vercel.json`)
-The included `vercel.json` provides automatic SPA rewrite rules for React Router v7:
+## API Documentation
+
+Successful responses follow a standard JSON envelope:
+
+```json
+{
+  "success": true,
+  "data": {},
+  "message": "Operation completed successfully"
+}
+```
+
+### Authentication (`/api/auth`)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/auth/register` | Public | Registers a new user and sets auth cookie |
+| `POST` | `/api/auth/login` | Public | Authenticates credentials and returns JWT |
+| `POST` | `/api/auth/logout` | Public | Clears authenticated session cookies |
+| `GET` | `/api/auth/me` | Authenticated | Returns current authenticated user profile |
+
+### Interviews (`/api/interviews`)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/interviews` | Authenticated | Creates a new mock interview session |
+| `GET` | `/api/interviews` | Authenticated | Lists past interviews for the current user |
+| `GET` | `/api/interviews/{id}` | Authenticated | Retrieves interview metadata and state |
+| `GET` | `/api/interviews/{id}/questions` | Authenticated | Fetches ordered questions for the session |
+| `GET` | `/api/interviews/{id}/answers` | Authenticated | Fetches answers and evaluation results |
+| `POST` | `/api/interviews/{id}/start` | Authenticated | Transitions session to `IN_PROGRESS` |
+| `POST` | `/api/interviews/{id}/answer` | Authenticated | Submits answer for Gemini evaluation |
+| `POST` | `/api/interviews/{id}/complete` | Authenticated | Finalizes session and computes scorecard |
+| `GET` | `/api/interviews/questions` | Authenticated | Lists all past interview questions |
+| `GET` | `/api/interviews/questions/{qid}` | Authenticated | Fetches individual question details |
+
+### Resumes (`/api/resumes`)
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `POST` | `/api/resumes/upload` | Authenticated | Uploads PDF resume (magic-byte validated) |
+| `GET` | `/api/resumes` | Authenticated | Lists uploaded resumes for the user |
+| `GET` | `/api/resumes/{id}` | Authenticated | Fetches resume metadata and extracted text |
+| `POST` | `/api/resumes/{id}/analyze` | Authenticated | Runs Gemini ATS analysis and skill extraction |
+
+### Dashboard, User & System
+
+| Method | Endpoint | Access | Description |
+|---|---|---|---|
+| `GET` | `/api/dashboard` | Authenticated | Computes aggregated candidate KPIs |
+| `GET` | `/api/dashboard/roadmap` | Authenticated | Retrieves current learning roadmap |
+| `POST` | `/api/dashboard/roadmap/generate` | Authenticated | Generates new AI learning roadmap |
+| `GET` | `/api/users/profile` | Authenticated | Retrieves user target role and level |
+| `PUT` | `/api/users/profile` | Authenticated | Updates candidate career goals |
+| `POST` | `/api/contact` | Public | Submits contact form inquiries |
+| `GET` | `/api/health` | Public | Liveness and DB readiness probe |
+| `GET` | `/actuator/health` | Public | Spring Boot Actuator health status |
+
+---
+
+## Testing
+
+### Frontend Tests (Vitest + Testing Library)
+
+Test suites are located in `src/__tests__/` (`analytics.test.js`, `Contact.test.jsx`, `CookieConsent.test.jsx`, `RecordingControls.test.jsx`):
+
 ```bash
-npm install -g vercel
-vercel
+# Run tests once
+pnpm test
+
+# Run tests in watch mode
+pnpm exec vitest
+```
+
+### Backend Tests (JUnit 5 + MockMvc)
+
+Test suites are located in `backend/src/test/java/com/intervai/`:
+
+```bash
+cd backend
+./mvnw test
+```
+
+### Formatting & Build Verification
+
+```bash
+# Format frontend code
+pnpm format
+
+# Verify frontend production build
+pnpm build
 ```
 
 ---
 
-## 📂 Project Directory Structure
+## Contribution Guidelines
 
-```
-IntervAI/
-├── backend/                                # Spring Boot 4.1.1 (Java 21) Application
-│   ├── .mvn/                               # Maven wrapper binaries & config
-│   ├── Dockerfile                          # Multi-stage JRE 21 Alpine container
-│   ├── pom.xml                             # Dependencies: Security, JPA, Flyway, PDFBox
-│   └── src/
-│       ├── main/
-│       │   ├── java/com/intervai/
-│       │   │   ├── config/                 # SecurityConfig, AsyncConfig, HttpClientConfig
-│       │   │   ├── controller/             # Auth, Interview, Resume, Dashboard, Health
-│       │   │   ├── dto/                    # Request and Response transfer objects
-│       │   │   ├── entity/                 # JPA models: User, Interview, Question, Answer
-│       │   │   ├── exception/              # GlobalExceptionHandler & custom exceptions
-│       │   │   ├── repository/             # Spring Data JPA repositories
-│       │   │   ├── security/               # JwtUtil, RateLimiterService, LockoutService
-│       │   │   └── service/                # Business services & AI evaluation delegates
-│       │   │       └── ai/                 # GeminiService, AnswerEvaluator, PromptSanitizer
-│       │   └── resources/
-│       │       ├── application.yml         # Shared application config
-│       │       ├── application-dev.yml     # Local dev profile (H2 database)
-│       │       ├── application-prod.yml    # Production profile (MySQL + Hikari tuning)
-│       │       └── db/migration/           # Flyway SQL migrations (V1, V2)
-│       └── test/java/com/intervai/         # JUnit 5 & Mockito test suite
-│
-├── public/                                 # Static assets & OpenGraph imagery
-│   ├── og-image.png                        # Platform banner & metadata card
-│   └── _headers                            # Nginx & CDN security headers
-│
-├── src/                                    # React 19 Frontend Application
-│   ├── assets/                             # Logos, branding marks & WebP graphics
-│   ├── components/
-│   │   ├── common/                         # Button, Card, Badge, Modal, CookieConsent
-│   │   ├── dashboard/                      # Dashboard cards & radar chart widgets
-│   │   ├── feedback/                       # Scorecards & question feedback displays
-│   │   ├── interview/                      # RecordingControls, Timer, Question displays
-│   │   ├── layout/                         # Navbar, MobileNavbar, Sidebar, ProtectedRoute
-│   │   └── questions/                      # Question cards & filtering controls
-│   ├── contexts/                           # AuthContext, ToastContext
-│   ├── hooks/                              # useAsync, usePageMeta, custom reactive hooks
-│   ├── pages/                              # Landing, Login, MockInterview, Roadmap, etc.
-│   ├── services/api/                       # Axios/fetch API clients with error handling
-│   ├── utils/                              # Analytics, date formatters, constants
-│   ├── __tests__/                          # Vitest & React Testing Library suites
-│   ├── App.jsx                             # React Router v7 routes definition
-│   ├── index.css                           # Tailwind CSS v4 entrypoint & animations
-│   └── main.jsx                            # React root mount point
-│
-├── docs/                                   # Architectural audit reports & specifications
-├── docker-compose.yml                      # Full-stack container orchestration
-├── Dockerfile                              # Multi-stage frontend Nginx container
-├── netlify.toml                            # Netlify SPA redirect rules
-├── package.json                            # Frontend npm scripts & dependencies
-├── render.yaml                             # Render Cloud Blueprint
-├── vercel.json                             # Vercel SPA routing configuration
-└── vite.config.ts                          # Vite 8 config with Tailwind v4 & React plugin
-```
+Contributions are welcome. Please follow this workflow:
 
----
-
-## 🤝 Contributing
-
-We welcome contributions from the engineering community! To contribute:
-
-1. **Fork the Repository**
-2. **Create a Feature Branch** (`git checkout -b feat/dynamic-feedback-engine`)
-3. **Commit Your Changes** (`git commit -m 'feat: implement dynamic feedback engine'`)
-4. **Run All Tests**:
+1. **Fork the repository** on GitHub.
+2. **Clone your fork**:
    ```bash
-   npm test
-   cd backend && ./mvnw test
+   git clone https://github.com/<your-username>/IntervAI.git
+   cd IntervAI
    ```
-5. **Push to the Branch** (`git push origin feat/dynamic-feedback-engine`)
-6. **Open a Pull Request** describing your changes and verification steps.
+3. **Create a feature branch**:
+   ```bash
+   git checkout -b feat/your-feature-name
+   ```
+4. **Make focused changes** keeping code clean and well-tested.
+5. **Run tests** for both frontend (`pnpm test`) and backend (`cd backend && ./mvnw test`).
+6. **Commit your changes** using clear, conventional commit messages:
+   ```bash
+   git commit -m "feat: add your concise description"
+   ```
+7. **Push your branch**:
+   ```bash
+   git push origin feat/your-feature-name
+   ```
+8. **Open a Pull Request** with a clear summary of the changes and verification steps.
 
 ---
 
-## 📄 License
+## Roadmap
 
-Distributed under the **MIT License**. See [`LICENSE`](LICENSE) for detailed terms.
+- **Completed**: Full-stack mock interview engine, Web Speech API voice capture, Gemini 1.5 Flash evaluation, PDFBox ATS resume intelligence, personalized learning roadmaps, Recharts analytics, Docker Compose stack, and JWT/rate-limiting security.
+- **Planned**: Additional practice tracks, expanded question bank coverage, and ongoing UI/UX refinements.
 
 ---
 
-<div align="center">
-  <sub>Built with ❤️ by <a href="https://github.com/aaryanman29-beep">Aaryan</a> and contributors. Practice with confidence, ace your loop.</sub>
-</div>
+## License
+
+No `LICENSE` file is currently present in this repository. Please contact the repository maintainer before redistributing or using this code in production.
+
+---
+
+## Acknowledgements / Contact
+
+- **Repository**: [AdityaP116/IntervAI](https://github.com/AdityaP116/IntervAI)
+- **Issues & Contributions**: Please open an issue or pull request on GitHub.
